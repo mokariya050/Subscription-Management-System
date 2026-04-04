@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+import ScreenFrame from '../components/ScreenFrame'
+
+const html = String.raw`<!DOCTYPE html>
 
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
@@ -165,4 +167,8 @@
 <img data-alt="minimalist architectural detail of a modern white building with sharp shadows and clear blue sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfuPilYZpyaHLIyQXa6GXabs3RijiRYP8XS6Rg4xSxbXiaVoWN7-qVBH5RszPl7o0UEn1rCj0sIVpCzfRXO0_tXhLiEEKocuSHWh004ONDuS5fC-QAC_bcxO9oCgNQnH20XmAQ-guuh0WL2AcDbW5ljWYrmCFxGC5FB3UKttY2yUH8JL3bcV965m9n2Xgbnvb4OJ2TSolgq7rSCNVZqGb0TlLa6GN0Kh67wp-dGX3fx8-wFBxCDV2CJm0MrAOrN1-VSzhvC2eET-8V"/>
 <img data-alt="close-up of premium textured paper with subtle shadows and elegant lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC14y_v9Te1mT4aFhMKmOn_5wmR3lxiM2DXiIvgyPZZEco9xZHEb4b_MlNxqjyWamor6QXj434Sat4vzYXCeMZ_PUbLOiMzIX_TVe4zXWwvBa9GBidUA9pgw71hQW-HLByn8ntSsW8He74JiPPNAkfm8Kg4yYVzqiok1n6rnvrA1VIHORCY764Xtfaq05J8lma9o5gPMys-FLDcm_VuBTgzXHVMmkvVwB8neGbRMgJCvrKRoCm-O1Fcl8rPRYrmLD6oOYGSZzC6f7r_"/>
 </div>
-</body></html>
+</body></html>`
+
+export default function SplashLoadingScreen() {
+  return <ScreenFrame title="Splash Loading" html={html} />
+}

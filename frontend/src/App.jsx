@@ -1,28 +1,51 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import LoginScreen from './screens/LoginScreen'
+import SignUpScreen from './screens/SignUpScreen'
+import ResetPasswordScreen from './screens/ResetPasswordScreen'
+import SplashLoadingBaseScreen from './screens/SplashLoadingScreen'
+import SplashSuccessBaseScreen from './screens/SplashSuccessScreen'
+import SplashErrorScreen from './screens/SplashErrorScreen'
 
-function HtmlScreen({ src, title }) {
-    return (
-        <iframe
-            title={title}
-            src={src}
-            className="screen-frame"
-            loading="eager"
-            referrerPolicy="no-referrer"
-            sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
-        />
-    )
+function SplashLoadingScreen() {
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            navigate('/splash/success', { replace: true })
+        }, 2000)
+
+        return () => clearTimeout(timer)
+    }, [navigate])
+
+    return <SplashLoadingBaseScreen />
+}
+
+function SplashSuccessScreen() {
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            navigate('/login', { replace: true })
+        }, 1600)
+
+        return () => clearTimeout(timer)
+    }, [navigate])
+
+    return <SplashSuccessBaseScreen />
 }
 
 export default function App() {
     return (
         <Routes>
             <Route path="/" element={<Navigate to="/splash/loading" replace />} />
-            <Route path="/splash/loading" element={<HtmlScreen title="Splash Loading" src="/screens/splash_screen_initial_load/code.html" />} />
-            <Route path="/splash/success" element={<HtmlScreen title="Splash Success" src="/screens/splash_screen_success_state/code.html" />} />
-            <Route path="/splash/error" element={<HtmlScreen title="Splash Error" src="/screens/splash_screen_error_state/code.html" />} />
-            <Route path="/login" element={<HtmlScreen title="Login" src="/screens/login_subsync/code.html" />} />
-            <Route path="/signup" element={<HtmlScreen title="Sign Up" src="/screens/sign_up_subsync/code.html" />} />
-            <Route path="/reset-password" element={<HtmlScreen title="Reset Password" src="/screens/reset_password_subsync/code.html" />} />
+            <Route path="/splash/loading" element={<SplashLoadingScreen />} />
+            <Route path="/splash/success" element={<SplashSuccessScreen />} />
+            <Route path="/splash/error" element={<SplashErrorScreen />} />
+            <Route path="/login" element={<LoginScreen />} />
+            <Route path="/signup" element={<SignUpScreen />} />
+            <Route path="/reset-password" element={<ResetPasswordScreen />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
     )
 }

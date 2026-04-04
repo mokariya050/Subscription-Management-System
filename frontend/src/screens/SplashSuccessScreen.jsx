@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+import ScreenFrame from '../components/ScreenFrame'
+
+const html = String.raw`<!DOCTYPE html>
 
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
@@ -135,4 +137,8 @@
 </main>
 <!-- Visual Polish: Ghost Lift Overlay -->
 <div class="fixed inset-0 bg-gradient-to-t from-surface via-transparent to-surface/50 pointer-events-none opacity-40"></div>
-</body></html>
+</body></html>`
+
+export default function SplashSuccessScreen() {
+  return <ScreenFrame title="Splash Success" html={html} />
+}
