@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quotation Template - SubSync</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary": "#4e6073",
+                      "on-surface": "#1b1c1a",
+                      "background": "#fbf9f5",
+                      "surface-container-high": "#eae8e4",
+                      "secondary-fixed": "#d1e4fb",
+                      "primary-fixed": "#d8e2ff",
+                      "on-tertiary-fixed-variant": "#614000",
+                      "on-background": "#1b1c1a",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-fixed": "#281800",
+                      "inverse-on-surface": "#f2f0ec",
+                      "primary-fixed-dim": "#b5c6f1",
+                      "surface-dim": "#dbdad6",
+                      "on-primary-fixed-variant": "#35466a",
+                      "on-secondary-fixed": "#091d2e",
+                      "tertiary-fixed": "#ffddaf",
+                      "outline-variant": "#c5c6cf",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed-variant": "#36485b",
+                      "surface-container": "#f0eeea",
+                      "primary": "#031839",
+                      "secondary-container": "#cfe2f9",
+                      "tertiary": "#251600",
+                      "outline": "#75777f",
+                      "inverse-primary": "#b5c6f1",
+                      "surface-container-highest": "#e4e2de",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed": "#061b3c",
+                      "on-primary": "#ffffff",
+                      "on-primary-container": "#8495bd",
+                      "on-surface-variant": "#44474e",
+                      "inverse-surface": "#30312e",
+                      "primary-container": "#1b2d4f",
+                      "surface-tint": "#4d5e83",
+                      "tertiary-container": "#402900",
+                      "error-container": "#ffdad6",
+                      "surface-variant": "#e4e2de",
+                      "surface-container-lowest": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Noto Serif"],
+                      "body": ["Manrope"],
+                      "label": ["Manrope"]
+              }
+            },
+          }
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .underline-input {
+            border: none;
+            border-bottom: 1px solid #D0CEC9;
+            background: transparent;
+            padding-bottom: 4px;
+        }
+        .underline-input:focus {
+            outline: none;
+            box-shadow: none;
+            border-bottom: 2px solid #031839;
+        }
+    </style>
+</head>
+<body class="bg-[#fbf9f5] font-body text-on-surface min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-[#fbf9f5] flex justify-between items-center w-full px-8 py-4 max-w-none docked full-width top-0 z-50">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold font-['Noto_Serif'] text-[#1b2d4f] tracking-tight">SubSync</span>
+</div>
+<nav class="flex gap-8 items-center">
+<a class="text-[#1b2d4f]/70 font-medium pb-1 hover:text-[#e8a838] transition-colors duration-200" href="#">Subscriptions</a>
+<a class="text-[#1b2d4f]/70 font-medium pb-1 hover:text-[#e8a838] transition-colors duration-200" href="#">Products</a>
+<a class="text-[#1b2d4f]/70 font-medium pb-1 hover:text-[#e8a838] transition-colors duration-200" href="#">Reporting</a>
+<a class="text-[#1b2d4f]/70 font-medium pb-1 hover:text-[#e8a838] transition-colors duration-200" href="#">Users/Contacts</a>
+<a class="text-[#1b2d4f] font-bold border-b-2 border-[#1b2d4f] pb-1 hover:text-[#e8a838] transition-colors duration-200" href="#">Quotation Templates</a>
+</nav>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#1b2d4f]/60 hover:text-[#e8a838] cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-[#1b2d4f]/60 hover:text-[#e8a838] cursor-pointer" data-icon="help_outline">help_outline</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex -space-x-2">
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="portrait of a professional woman with a soft smile in corporate attire, clean neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRaN7aEzsLvH9_MZ40SrBizB-uSkZ4NmTQ9vBX27i7CAmceNidcTf1KHEI1DzF0_ylw1MM78QtiS10-3qfPIjXqRnDRngWiy3WwhSM1B9VeWcHBgHf7HDajMEwqWi-57yMm2vu4dGJoRyu7D5HNzHM50s-muFsymrDVVNNwwWFpIEJqqnpb4-qRM9kwDWUVkG1Qnbn4gNT2ggmK4oSeHQALRjyW14oWY92ZoLMB9gZFpBHto8hmUjjS47j72CIPrRxhIDUl__C7qJP"/>
+</div>
+<button class="font-semibold text-sm text-[#1b2d4f] hover:text-[#e8a838] transition-colors">My Profile</button>
+</div>
+</div>
+</header>
+<!-- Action Bar -->
+<section class="bg-white px-8 py-4 flex justify-between items-center shadow-sm relative z-10">
+<div class="flex items-center gap-4">
+<button class="bg-[#1b2d4f] text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:opacity-90 active:scale-95 transition-all">New</button>
+<div class="flex gap-2">
+<button class="p-2 text-[#1b2d4f]/40 hover:text-error hover:bg-error/5 rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+<button class="p-2 text-[#1b2d4f]/40 hover:text-primary hover:bg-primary/5 rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+</button>
+</div>
+</div>
+<div>
+<button class="flex items-center gap-2 border border-[#1b2d4f] px-4 py-2 rounded-lg text-[#1b2d4f] font-semibold text-sm hover:bg-[#1b2d4f]/5 transition-all">
+                Subscription
+                <span class="bg-[#e8a838] text-[#281800] text-[10px] font-bold px-2 py-0.5 rounded-full">12</span>
+</button>
+</div>
+</section>
+<!-- Main Content Canvas -->
+<main class="max-w-[1440px] mx-auto p-12">
+<!-- Background Geometric Accents (Architectural Precision) -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden opacity-[0.03]">
+<div class="absolute top-0 right-1/4 w-[1px] h-full bg-[#1b2d4f]"></div>
+<div class="absolute top-1/3 left-0 w-full h-[1px] bg-[#1b2d4f]"></div>
+</div>
+<!-- Form Card Container -->
+<div class="w-full max-w-5xl mx-auto bg-white rounded-xl shadow-[0_10px_40px_rgba(27,45,79,0.05)] p-10 relative">
+<!-- Card Header -->
+<div class="mb-12">
+<h1 class="text-2xl font-headline italic text-[#e8a838]">Quotation Template</h1>
+</div>
+<!-- Form Layout -->
+<form class="space-y-10 max-w-2xl">
+<!-- Quotation Validity -->
+<div class="flex items-end gap-3">
+<label class="text-[12px] font-bold text-[#1b2d4f] uppercase tracking-wider whitespace-nowrap">Quotation Validity :-</label>
+<input class="underline-input w-[60px] text-sm" type="number" value="30"/>
+<span class="text-sm text-[#1b2d4f]/60 font-medium">days</span>
+</div>
+<!-- Recurring Plan -->
+<div class="flex items-end gap-3">
+<label class="text-[12px] font-bold text-[#1b2d4f] uppercase tracking-wider whitespace-nowrap">Recurring Plan :-</label>
+<input class="underline-input w-[180px] text-sm" placeholder="Select Plan..." type="text"/>
+</div>
+<!-- Last Forever -->
+<div class="flex items-center gap-3">
+<label class="text-[12px] font-bold text-[#1b2d4f] uppercase tracking-wider">Last Forever :-</label>
+<input class="w-4 h-4 rounded border-[#D0CEC9] text-[#1b2d4f] focus:ring-0" type="checkbox"/>
+</div>
+<!-- End After -->
+<div class="flex items-end gap-3">
+<label class="text-[12px] font-bold text-[#1b2d4f] uppercase tracking-wider whitespace-nowrap">End After :-</label>
+<input class="underline-input w-[60px] text-sm" type="number" value="12"/>
+<div class="relative w-[110px]">
+<select class="underline-input w-full text-sm appearance-none cursor-pointer">
+<option>Month</option>
+<option>Week</option>
+<option>Year</option>
+</select>
+<span class="material-symbols-outlined absolute right-0 bottom-1 text-[#1b2d4f]/40 pointer-events-none text-sm" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</form>
+<!-- Table Section -->
+<div class="mt-16">
+<div class="overflow-hidden">
+<table class="w-full border-collapse">
+<thead>
+<tr class="bg-[#FAFAF8] border-y border-[#D0CEC9]/30">
+<th class="py-4 px-6 text-[11px] font-bold text-[#1b2d4f] uppercase tracking-widest text-center border-r border-dashed border-[#D0CEC9]">Product</th>
+<th class="py-4 px-6 text-[11px] font-bold text-[#1b2d4f] uppercase tracking-widest text-center border-r border-dashed border-[#D0CEC9]">Description</th>
+<th class="py-4 px-6 text-[11px] font-bold text-[#1b2d4f] uppercase tracking-widest text-center">Quantity</th>
+</tr>
+</thead>
+<tbody>
+<!-- Pre-filled Row -->
+<tr class="hover:bg-[#1b2d4f]/[0.02] transition-colors">
+<td class="py-5 px-6 text-sm text-[#1b2d4f] font-medium border-r border-dashed border-[#D0CEC9] text-center">demo</td>
+<td class="py-5 px-6 text-sm text-[#1b2d4f]/60 border-r border-dashed border-[#D0CEC9] text-center italic">Demo product</td>
+<td class="py-5 px-6 text-sm text-[#1b2d4f] font-mono font-semibold text-center">1 qty</td>
+</tr>
+<!-- Empty Row 1 -->
+<tr class="border-t border-dashed border-[#D0CEC9]">
+<td class="py-8 border-r border-dashed border-[#D0CEC9]"></td>
+<td class="py-8 border-r border-dashed border-[#D0CEC9]"></td>
+<td class="py-8"></td>
+</tr>
+<!-- Empty Row 2 -->
+<tr class="border-t border-dashed border-[#D0CEC9]">
+<td class="py-8 border-r border-dashed border-[#D0CEC9]"></td>
+<td class="py-8 border-r border-dashed border-[#D0CEC9]"></td>
+<td class="py-8"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Add Line Action -->
+<div class="mt-6">
+<button class="flex items-center gap-2 text-[#e8a838] font-bold text-sm hover:translate-x-1 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                        Add a line
+                    </button>
+</div>
+</div>
+<!-- Meta Data (Editorial Contrast) -->
+<div class="mt-16 pt-8 border-t border-[#D0CEC9]/20 flex justify-between items-center">
+<div class="space-y-1">
+<span class="block text-[10px] font-bold font-label uppercase tracking-[0.2em] text-[#1b2d4f]/40">Last Updated</span>
+<span class="text-xs font-medium text-[#1b2d4f]/70">October 24, 2023 • 14:20 PM</span>
+</div>
+<div class="flex gap-4">
+<button class="px-8 py-3 rounded-lg text-[#1b2d4f] font-bold text-sm bg-surface-container-high hover:bg-surface-container-highest transition-all">Cancel</button>
+<button class="px-10 py-3 rounded-lg bg-[#1b2d4f] text-white font-bold text-sm hover:opacity-90 active:scale-95 transition-all">Save Template</button>
+</div>
+</div>
+</div>
+<!-- Footer Branding Spacer -->
+<div class="py-12 flex justify-center opacity-20 select-none">
+<span class="font-headline text-4xl font-bold text-[#1b2d4f] tracking-tighter italic">S.</span>
+</div>
+</main>
+</body></html>

@@ -50,7 +50,13 @@ class User(db.Model):
     deleted_at = db.Column(db.DateTime, nullable=True)
     
     # Relationships
-    roles = db.relationship('UserRole', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    roles = db.relationship(
+        'UserRole',
+        foreign_keys='UserRole.user_id',
+        back_populates='user',
+        lazy='dynamic',
+        cascade='all, delete-orphan'
+    )
     addresses = db.relationship('Address', backref='user', lazy='dynamic', cascade='all, delete-orphan')
     payment_methods = db.relationship('PaymentMethod', backref='user', lazy='dynamic', cascade='all, delete-orphan')
     subscriptions = db.relationship('Subscription', backref='user', lazy='dynamic')
@@ -68,6 +74,9 @@ class UserRole(db.Model):
     role = db.Column(db.String(50), nullable=False)  # admin, manager, customer, viewer
     granted_at = db.Column(db.DateTime, default=datetime.utcnow)
     granted_by_user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=True)
+
+    user = db.relationship('User', foreign_keys=[user_id], back_populates='roles')
+    granted_by_user = db.relationship('User', foreign_keys=[granted_by_user_id])
 
 
 class Address(db.Model):
@@ -177,7 +186,7 @@ class Subscription(db.Model):
     canceled_at = db.Column(db.DateTime, nullable=True)
     cancellation_reason = db.Column(db.String(255), nullable=True)
     ended_at = db.Column(db.DateTime, nullable=True)
-    metadata = db.Column(db.JSON, nullable=True)
+    metadata_json = db.Column('metadata', db.JSON, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     deleted_at = db.Column(db.DateTime, nullable=True)

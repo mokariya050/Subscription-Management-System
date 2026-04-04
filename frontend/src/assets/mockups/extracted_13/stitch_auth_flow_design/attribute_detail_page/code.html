@@ -1,0 +1,215 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Attribute Detail | The Curated Ledger</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#36485b",
+                    "inverse-on-surface": "#f2f0ec",
+                    "surface-bright": "#fbf9f5",
+                    "on-tertiary-container": "#c58a18",
+                    "on-secondary-container": "#526478",
+                    "primary-container": "#1b2d4f",
+                    "on-tertiary-fixed": "#281800",
+                    "tertiary": "#251600",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed": "#091d2e",
+                    "surface-container-low": "#f5f3ef",
+                    "surface-container-highest": "#e4e2de",
+                    "outline": "#75777f",
+                    "surface": "#fbf9f5",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#402900",
+                    "surface-variant": "#e4e2de",
+                    "on-primary-fixed": "#061b3c",
+                    "primary-fixed": "#d8e2ff",
+                    "on-surface": "#1b1c1a",
+                    "primary-fixed-dim": "#b5c6f1",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#eae8e4",
+                    "on-primary-fixed-variant": "#35466a",
+                    "on-primary-container": "#8495bd",
+                    "tertiary-fixed-dim": "#fdba49",
+                    "tertiary-fixed": "#ffddaf",
+                    "surface-tint": "#4d5e83",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#cfe2f9",
+                    "inverse-primary": "#b5c6f1",
+                    "surface-container": "#f0eeea",
+                    "secondary-fixed": "#d1e4fb",
+                    "background": "#fbf9f5",
+                    "surface-dim": "#dbdad6",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b5c8df",
+                    "on-surface-variant": "#44474e",
+                    "on-tertiary-fixed-variant": "#614000",
+                    "outline-variant": "#c5c6cf",
+                    "primary": "#031839",
+                    "on-secondary": "#ffffff",
+                    "on-background": "#1b1c1a",
+                    "on-error": "#ffffff",
+                    "secondary": "#4e6073",
+                    "inverse-surface": "#30312e"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #fbf9f5; }
+        .font-serif { font-family: 'Noto Serif', serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-surface-container-low min-h-screen text-on-surface">
+<!-- TopNavBar: Transcribed from JSON & User instructions -->
+<header class="bg-[#fbf9f5] flex justify-between items-center w-full px-8 py-4 max-w-full mx-auto fixed top-0 z-50 transition-all duration-200">
+<div class="flex items-center gap-8">
+<span class="text-xl font-serif font-bold text-[#1b2d4f]" style="">SubSync</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-500 hover:text-[#1b2d4f] transition-colors font-sans uppercase tracking-wider text-xs" href="#" style="">Subscriptions</a>
+<a class="text-slate-500 hover:text-[#1b2d4f] transition-colors font-sans uppercase tracking-wider text-xs" href="#" style="">Products</a>
+<a class="text-slate-500 hover:text-[#1b2d4f] transition-colors font-sans uppercase tracking-wider text-xs" href="#" style="">Reporting</a>
+<a class="text-slate-500 hover:text-[#1b2d4f] transition-colors font-sans uppercase tracking-wider text-xs" href="#" style="">Users/Contacts</a>
+<a class="text-[#1b2d4f] border-b-2 border-[#1b2d4f] font-bold pb-1 font-sans uppercase tracking-wider text-xs" href="#" style="">Attributes</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2 mr-4">
+<button class="material-symbols-outlined p-2 text-slate-500 hover:bg-[#f2f0ea] rounded-full transition-all" style="">add</button>
+<button class="material-symbols-outlined p-2 text-slate-500 hover:bg-[#f2f0ea] rounded-full transition-all" style="">delete</button>
+<button class="material-symbols-outlined p-2 text-slate-500 hover:bg-[#f2f0ea] rounded-full transition-all" style="">export_notes</button>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-xs font-sans uppercase tracking-wider font-bold text-[#1b2d4f]" style="">My Profile</span>
+<img class="w-8 h-8 rounded-full object-cover" data-alt="close-up portrait of a professional woman with a minimalist aesthetic, warm soft lighting, neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvp_Z0PfALccx_59dHkyjciDS9_BsBYBlRP3WeanwAFtDreiwVIB5jeOjtTCmRtiCIsWng2UnBiXYP_2C-5TJ4va3IIdMn1iFT8CxO6NzApj3M4ktN1yZaXt1lzBAKFdbrq0v7t4kAKFwg1cGVlaNQJ6xurR2H9yS1qhpPyzhvoPWgsIjZK9-ngHxf1tFRHz_Ds8acGR5SKUHRHmYvuArC7GE4Ao0kb_L7g2za1UFFHgDx9W68_HQUuvH26OntGJQ01wrDhDJcU3-0" style="">
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<main class="pt-24 pb-20 px-4 flex flex-col items-center">
+<!-- Action Bar / Page Header -->
+<div class="w-full max-w-[420px] flex justify-between items-center mb-8">
+<h1 class="font-serif text-2xl text-primary italic" style="">Attribute Detail</h1>
+<div class="flex gap-2">
+<button class="p-2 text-slate-500 hover:bg-surface-container-high rounded-lg transition-colors" style="">
+<span class="material-symbols-outlined" style="">delete</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-surface-container-high rounded-lg transition-colors" style="">
+<span class="material-symbols-outlined" style="">ios_share</span>
+</button>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-medium text-sm hover:opacity-90 active:scale-95 transition-all" style="">
+                    New
+                </button>
+</div>
+</div>
+<!-- Geometric Background Accents -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] z-0 overflow-hidden">
+<svg class="absolute top-1/4 -left-20 w-[600px]" viewBox="0 0 100 100">
+<line stroke="#1b2d4f" stroke-width="0.1" x1="0" x2="100" y1="0" y2="100"></line>
+<line stroke="#1b2d4f" stroke-width="0.1" x1="10" x2="110" y1="0" y2="100"></line>
+</svg>
+<svg class="absolute bottom-1/4 -right-20 w-[600px]" viewBox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="40" stroke="#1b2d4f" stroke-width="0.1"></circle>
+</svg>
+</div>
+<!-- Main Form Card -->
+<div class="w-full max-w-[420px] bg-surface-container-lowest rounded-xl shadow-[0_10px_40px_rgba(27,45,79,0.05)] p-8 z-10 relative">
+<!-- Attribute Name Input Section -->
+<div class="mb-10">
+<label class="font-serif text-[22px] italic text-tertiary-fixed-dim block mb-2" style="">Attribute Name</label>
+<div class="relative">
+<input class="w-full bg-transparent border-0 border-b-2 border-primary py-2 px-0 text-xl font-body focus:ring-0 focus:border-tertiary-fixed-dim transition-colors" placeholder="Enter attribute name..." type="text" value="Premium Support Tier">
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex gap-4 mb-6">
+<button class="bg-primary text-on-primary px-4 py-1.5 rounded-full text-xs font-bold font-sans tracking-wide" style="">
+                    Attribute Values
+                </button>
+<button class="text-on-surface-variant hover:bg-surface-container-high px-4 py-1.5 rounded-full text-xs font-bold font-sans tracking-wide transition-colors" style="">
+                    History
+                </button>
+</div>
+<!-- Table Container -->
+<div class="w-full border-t border-outline-variant/15">
+<div class="grid grid-cols-2 text-[10px] font-sans uppercase tracking-[0.2em] text-on-surface-variant py-4">
+<div class="pl-2" style="">Value</div>
+<div class="border-l border-outline-variant/20 pl-4" style="">Default Extra Price</div>
+</div>
+<!-- Empty Dashed Rows -->
+<div class="space-y-0">
+<div class="h-10 grid grid-cols-2 border-t border-dashed border-outline-variant/30">
+<div class="border-r border-dashed border-outline-variant/30"></div>
+<div></div>
+</div>
+<div class="h-10 grid grid-cols-2 border-t border-dashed border-outline-variant/30">
+<div class="border-r border-dashed border-outline-variant/30"></div>
+<div></div>
+</div>
+<div class="h-10 grid grid-cols-2 border-t border-dashed border-outline-variant/30">
+<div class="border-r border-dashed border-outline-variant/30"></div>
+<div></div>
+</div>
+<div class="h-10 grid grid-cols-2 border-t border-dashed border-outline-variant/30">
+<div class="border-r border-dashed border-outline-variant/30"></div>
+<div></div>
+</div>
+</div>
+<!-- Add Action -->
+<button class="mt-6 flex items-center gap-2 text-tertiary-fixed-dim hover:text-on-tertiary-fixed-variant transition-colors group" style="">
+<span class="material-symbols-outlined text-sm" style="">add</span>
+<span class="text-sm font-semibold underline underline-offset-4 decoration-1" style="">Add a line</span>
+</button>
+</div>
+</div>
+<!-- Centered Page Label -->
+<div class="mt-12 text-center">
+<span class="font-serif italic text-[28px] text-tertiary-fixed-dim" style=""></span>
+</div>
+</main>
+<!-- SideNavBar Logic (Transcribed if needed for context, though hidden on top-bar layouts per instructions) -->
+<aside class="hidden lg:hidden fixed left-0 top-0 h-full w-64 bg-surface py-6 flex-col border-r-0 z-40">
+<div class="px-6 mb-8">
+<h2 class="font-serif text-lg font-bold text-[#1b2d4f]" style="">Ledger Admin</h2>
+<p class="text-xs text-on-surface-variant" style="">Subscription Engine</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 hover:bg-[#f2f0ea]/50 transition-all duration-300" href="#" style="">
+<span class="material-symbols-outlined text-xl" style="">dashboard</span>
+<span class="font-sans text-sm" style="">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-[#f2f0ea] text-[#1b2d4f] font-semibold rounded-r-lg transition-all duration-300" href="#" style="">
+<span class="material-symbols-outlined text-xl" data-weight="fill" style="">list_alt</span>
+<span class="font-sans text-sm" style="">Attributes</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full bg-[#1b2d4f] text-white py-3 rounded-lg text-sm font-medium" style="">Subscription (12)</button>
+</div>
+</aside>
+</body></html>

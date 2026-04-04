@@ -1,0 +1,188 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SubSync | Recurring Plan Details</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1b2d4f",
+                        "on-primary": "#ffffff",
+                        "surface": "#fbf9f5",
+                        "surface-container-low": "#f5f3ef",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#e8a838",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c5c6cf",
+                    },
+                    fontFamily: {
+                        "headline": ["Playfair Display", "serif"],
+                        "body": ["DM Sans", "sans-serif"],
+                        "label": ["DM Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        input:focus {
+            outline: none !important;
+            border-bottom: 2px solid #1b2d4f !important;
+        }
+        .underline-input {
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            border-bottom: 1px solid #c5c6cf;
+            background: transparent;
+            padding-left: 0;
+            padding-right: 0;
+        }
+    </style>
+</head>
+<body class="bg-[#f5f3ef] font-body text-primary min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-[#fbf9f5] dark:bg-slate-950 flex justify-between items-center w-full px-8 py-4 max-w-full mx-auto fixed top-0 z-50">
+<div class="flex items-center gap-8">
+<span class="text-xl font-serif font-bold text-[#1b2d4f] dark:text-blue-200" style="">SubSync</span>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-500 hover:text-[#1b2d4f] transition-colors font-sans uppercase tracking-wider text-xs font-semibold" href="#" style="">Subscriptions</a>
+<a class="text-slate-500 hover:text-[#1b2d4f] transition-colors font-sans uppercase tracking-wider text-xs font-semibold" href="#" style="">Products</a>
+<a class="text-slate-500 hover:text-[#1b2d4f] transition-colors font-sans uppercase tracking-wider text-xs font-semibold" href="#" style="">Reporting</a>
+<a class="text-slate-500 hover:text-[#1b2d4f] transition-colors font-sans uppercase tracking-wider text-xs font-semibold" href="#" style="">Users/Contacts</a>
+<a class="text-[#1b2d4f] border-b-2 border-[#1b2d4f] font-bold pb-1 font-sans uppercase tracking-wider text-xs" href="#" style="">Recurring Plan</a>
+<a class="text-slate-500 hover:text-[#1b2d4f] transition-colors font-sans uppercase tracking-wider text-xs font-semibold" href="#" style="">My Profile</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-slate-500 hover:bg-[#f2f0ea] p-2 rounded-full transition-all" style="">add</button>
+<button class="material-symbols-outlined text-slate-500 hover:bg-[#f2f0ea] p-2 rounded-full transition-all" style="">delete</button>
+<button class="material-symbols-outlined text-slate-500 hover:bg-[#f2f0ea] p-2 rounded-full transition-all" style="">export_notes</button>
+<div class="h-8 w-8 rounded-full bg-primary-fixed overflow-hidden ml-2">
+<img alt="User profile avatar" data-alt="minimalist user avatar silhouette on a soft neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaRZTkSlmayPqJQaGh9NBjvM9W06WCq1WeW9hEMaffLH1xuv-v7pMFU-vFnchjTqXMvwgNI2fg_qA3Lr8AV0wNhMrs2Gk-LWDOa1yXj4eKEGSPcqnZEl56DKjf0gl6TGGqGaIsDgMGazzzz1jQWnPGT3GxpPHcC4ubKPEiy63GqwNmbKuWBstHDpYlN6wet8j8gBkllj7H6eR5OyP0pc2ZyFy_KhzRqzXwH6MwSRCFFC88xUi_XFLL5tdTNnDurW7rAVkmWYYxrVgG" class="" style="">
+</div>
+</div>
+</header>
+<main class="pt-24 pb-20 px-8 max-w-[1440px] mx-auto">
+<!-- Action Bar -->
+<div class="flex justify-between items-center mb-12">
+<div class="flex gap-4 items-center">
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-md font-bold text-sm hover:opacity-90 transition-all active:scale-95" style="">New</button>
+<div class="flex gap-1">
+<button class="p-2 text-slate-500 hover:text-primary transition-colors" style=""><span class="material-symbols-outlined" style="">delete</span></button>
+<button class="p-2 text-slate-500 hover:text-primary transition-colors" style=""><span class="material-symbols-outlined" style="">ios_share</span></button>
+</div>
+</div>
+<button class="border border-primary text-primary px-5 py-2 rounded-md font-bold text-sm flex items-center gap-3 hover:bg-primary hover:text-on-primary transition-all" style="">
+                Subscription
+                <span class="bg-tertiary text-primary text-[10px] font-bold px-2 py-0.5 rounded-full" style="">12</span>
+</button>
+</div>
+<!-- Form Card Container -->
+<div class="max-w-[1100px] mx-auto relative">
+<div class="bg-white rounded-[12px] shadow-[0_10px_40px_rgba(27,45,79,0.05)] p-12 mb-8 border border-white">
+<!-- Recurring Name Header -->
+<div class="mb-12">
+<label class="block font-headline text-[20px] text-primary mb-2" style="">Recurring Name</label>
+<input class="w-full underline-input text-2xl font-body py-2 placeholder:text-slate-300" placeholder="Enter plan name..." type="text">
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-8">
+<!-- Left Column -->
+<div class="space-y-8">
+<div class="flex items-end gap-4">
+<label class="font-body font-semibold text-sm text-slate-600 whitespace-nowrap pb-2" style="">Billing Period</label>
+<div class="flex items-end gap-2 flex-grow">
+<input class="w-20 underline-input text-center py-2 font-medium" type="number" value="1">
+<select class="underline-input flex-grow py-2 bg-transparent appearance-none font-medium">
+<option>Weeks</option>
+<option selected="">Month</option>
+<option>Year</option>
+</select>
+</div>
+</div>
+<div class="flex items-end gap-4">
+<label class="font-body font-semibold text-sm text-slate-600 whitespace-nowrap pb-2" style="">Automatic Close</label>
+<div class="flex items-end gap-2 flex-grow">
+<input class="w-20 underline-input text-center py-2 font-medium" placeholder="0" type="number">
+<span class="pb-2 text-slate-400 text-sm italic" style="">Days</span>
+</div>
+</div>
+</div>
+<!-- Right Column -->
+<div class="space-y-6">
+<div class="flex flex-col gap-1">
+<label class="flex items-center gap-3 cursor-pointer group" style="">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox">
+<span class="font-medium text-slate-700" style="">Closable</span>
+</label>
+<span class="ml-8 text-xs text-emerald-600 italic" style="">Allows termination before period ends</span>
+</div>
+<label class="flex items-center gap-3 cursor-pointer" style="">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox">
+<span class="font-medium text-slate-700" style="">Pausable</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer" style="">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox">
+<span class="font-medium text-slate-700" style="">Renew</span>
+</label>
+</div>
+</div>
+<!-- Product Table -->
+<div class="mt-16">
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-slate-100">
+<th class="pb-4 font-sans uppercase tracking-wider text-[10px] font-bold text-slate-400" style="">Product</th>
+<th class="pb-4 font-sans uppercase tracking-wider text-[10px] font-bold text-slate-400" style="">Variant</th>
+<th class="pb-4 font-sans uppercase tracking-wider text-[10px] font-bold text-slate-400" style="">Price</th>
+<th class="pb-4 font-sans uppercase tracking-wider text-[10px] font-bold text-slate-400 text-right" style="">Min Qty</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr class="border-b border-slate-50">
+<td class="py-5 font-medium" style="">Professional Suite</td>
+<td class="py-5 text-slate-500" style="">Enterprise Edition</td>
+<td class="py-5 text-slate-400 italic" style="">eg. 4 rs per week</td>
+<td class="py-5 text-right font-semibold" style="">1</td>
+</tr>
+<tr class="border-b border-slate-50">
+<td class="py-5 font-medium" style="">Cloud Storage</td>
+<td class="py-5 text-slate-500" style="">1TB Tier</td>
+<td class="py-5 text-slate-400 italic" style="">eg. 4 rs per week</td>
+<td class="py-5 text-right font-semibold" style="">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<button class="mt-6 text-tertiary font-bold text-sm flex items-center gap-2 hover:opacity-80 transition-all" style="">
+<span class="material-symbols-outlined text-lg" style="">add</span>Add a line
+                    </button>
+</div>
+</div>
+<!-- Name Tag Pill -->
+<div class="absolute -bottom-4 right-0">
+<span class="bg-tertiary text-primary font-bold px-4 py-2 rounded-full text-xs shadow-sm" style="">Patel Kevin</span>
+</div>
+</div>
+<!-- Centered Page Label -->
+<div class="mt-12 text-center">
+<h1 class="font-headline italic text-[28px] text-tertiary" style=""><br></h1>
+</div>
+</main>
+<!-- Asymmetric geometric decoration (Subtle) -->
+<div class="fixed bottom-0 left-0 w-64 h-64 opacity-[0.03] pointer-events-none -z-10 translate-y-24 -translate-x-24 rotate-45 border-[1px] border-primary"></div>
+<div class="fixed top-0 right-0 w-96 h-96 opacity-[0.03] pointer-events-none -z-10 -translate-y-32 translate-x-32 rounded-full border-[1px] border-primary"></div>
+</body></html>

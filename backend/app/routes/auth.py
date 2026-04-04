@@ -65,8 +65,8 @@ def register():
                         new_value={'email': user.email, 'name': f"{user.first_name} {user.last_name}"})
         
         # Generate tokens
-        access_token = create_access_token(identity=user.id)
-        refresh_token = create_refresh_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id))
+        refresh_token = create_refresh_token(identity=str(user.id))
         
         schema = UserSchema()
         return success_response({
@@ -111,8 +111,8 @@ def login():
         create_audit_log(user.id, user.account_id, 'user_login', 'users', user.id)
         
         # Generate tokens
-        access_token = create_access_token(identity=user.id)
-        refresh_token = create_refresh_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id))
+        refresh_token = create_refresh_token(identity=str(user.id))
         
         schema = UserSchema()
         return success_response({
@@ -129,13 +129,13 @@ def login():
 @jwt_required(refresh=True)
 def refresh():
     """Refresh access token"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at or not user.is_active:
         return error_response('User not found or inactive', 401)
     
-    access_token = create_access_token(identity=user_id)
+    access_token = create_access_token(identity=str(user_id))
     return success_response({
         'access_token': access_token
     }, 'Token refreshed')
@@ -145,7 +145,7 @@ def refresh():
 @jwt_required()
 def logout():
     """Logout user (frontend should discard tokens)"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     create_audit_log(user_id, None, 'user_logout', 'users', user_id)
     return success_response(message='Logged out successfully')
 
@@ -154,7 +154,7 @@ def logout():
 @jwt_required()
 def get_current_user():
     """Get current user info"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at or not user.is_active:

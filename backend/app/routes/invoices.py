@@ -15,7 +15,7 @@ payments_bp = Blueprint('payments', __name__, url_prefix='/api/payments')
 @jwt_required()
 def list_invoices():
     """List user invoices"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -44,7 +44,7 @@ def list_invoices():
 @jwt_required()
 def get_invoice(invoice_id):
     """Get invoice by ID"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -67,7 +67,7 @@ def get_invoice(invoice_id):
 @jwt_required()
 def get_invoice_items(invoice_id):
     """Get invoice line items"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -91,7 +91,7 @@ def get_invoice_items(invoice_id):
 @jwt_required()
 def create_invoice():
     """Create manual invoice (admin)"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -170,7 +170,7 @@ def create_invoice():
 @jwt_required()
 def send_invoice(invoice_id):
     """Mark invoice as sent"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -210,7 +210,7 @@ def send_invoice(invoice_id):
 @jwt_required()
 def list_payments():
     """List user payments"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -239,7 +239,7 @@ def list_payments():
 @jwt_required()
 def get_payment(payment_id):
     """Get payment by ID"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -262,7 +262,7 @@ def get_payment(payment_id):
 @jwt_required()
 def create_payment():
     """Create payment for invoice"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:

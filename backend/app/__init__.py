@@ -15,6 +15,7 @@ def create_app(config_name='development'):
     """Create and configure Flask application"""
     
     app = Flask(__name__)
+    app.url_map.strict_slashes = False
     
     # Load config
     app.config.from_object(config[config_name])

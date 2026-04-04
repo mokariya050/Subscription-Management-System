@@ -13,7 +13,7 @@ users_bp = Blueprint('users', __name__, url_prefix='/api/users')
 @jwt_required()
 def list_users():
     """List all users (admin only or own account)"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -35,7 +35,7 @@ def list_users():
 @jwt_required()
 def get_user(user_id):
     """Get user by ID"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.deleted_at:
@@ -61,7 +61,7 @@ def get_user(user_id):
 @jwt_required()
 def update_user(user_id):
     """Update user profile"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.deleted_at:
@@ -111,7 +111,7 @@ def update_user(user_id):
 @jwt_required()
 def get_user_roles(user_id):
     """Get user roles"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.deleted_at:
@@ -137,7 +137,7 @@ def get_user_roles(user_id):
 @jwt_required()
 def add_user_role(user_id):
     """Add role to user"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.deleted_at:
@@ -182,7 +182,7 @@ def add_user_role(user_id):
 @jwt_required()
 def get_user_addresses(user_id):
     """Get user addresses"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.deleted_at:
@@ -206,7 +206,7 @@ def get_user_addresses(user_id):
 @jwt_required()
 def create_address(user_id):
     """Create user address"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.deleted_at:
@@ -254,7 +254,7 @@ def create_address(user_id):
 @jwt_required()
 def get_user_payment_methods(user_id):
     """Get user payment methods"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.deleted_at:
@@ -277,7 +277,7 @@ def get_user_payment_methods(user_id):
 @jwt_required()
 def create_payment_method(user_id):
     """Create payment method"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.deleted_at:

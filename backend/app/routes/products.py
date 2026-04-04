@@ -41,7 +41,7 @@ def get_product(product_id):
 @admin_required
 def create_product():
     """Create new product (admin only)"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not request.is_json:
@@ -86,7 +86,7 @@ def create_product():
 @admin_required
 def update_product(product_id):
     """Update product (admin only)"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     product = Product.query.get(product_id)
@@ -161,7 +161,7 @@ def get_plan(plan_id):
 @admin_required
 def create_plan():
     """Create new plan (admin only)"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not request.is_json:
@@ -219,7 +219,7 @@ def create_plan():
 @admin_required
 def update_plan(plan_id):
     """Update plan (admin only)"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     plan = Plan.query.get(plan_id)

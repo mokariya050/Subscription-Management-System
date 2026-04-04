@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SubSync - Tax Details</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "outline": "#75777f",
+                        "on-surface": "#1b1c1a",
+                        "surface-container": "#f0eeea",
+                        "secondary-fixed": "#d1e4fb",
+                        "secondary": "#4e6073",
+                        "primary": "#031839",
+                        "tertiary": "#251600",
+                        "on-tertiary-container": "#c58a18",
+                        "tertiary-container": "#402900",
+                        "primary-container": "#1b2d4f",
+                        "background": "#fbf9f5",
+                        "on-secondary-fixed": "#091d2e",
+                        "surface-container-highest": "#e4e2de",
+                        "inverse-surface": "#30312e",
+                        "secondary-fixed-dim": "#b5c8df",
+                        "on-background": "#1b1c1a",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#eae8e4",
+                        "tertiary-fixed-dim": "#fdba49",
+                        "surface-variant": "#e4e2de",
+                        "on-primary-fixed": "#061b3c",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c5c6cf",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#614000",
+                        "inverse-primary": "#b5c6f1",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#f2f0ec",
+                        "surface-tint": "#4d5e83",
+                        "on-tertiary-fixed": "#281800",
+                        "surface-container-low": "#f5f3ef",
+                        "primary-fixed-dim": "#b5c6f1",
+                        "on-secondary-fixed-variant": "#36485b",
+                        "surface-bright": "#fbf9f5",
+                        "secondary-container": "#cfe2f9",
+                        "tertiary-fixed": "#ffddaf",
+                        "on-secondary-container": "#526478",
+                        "on-primary-container": "#8495bd",
+                        "surface-dim": "#dbdad6",
+                        "surface": "#fbf9f5",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary-fixed-variant": "#35466a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#44474e"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Noto Serif", "serif"],
+                        "body": ["Manrope", "sans-serif"],
+                        "label": ["Manrope", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #fbf9f5; }
+        .serif-heading { font-family: 'Noto Serif', serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .underline-input {
+            border: none;
+            border-bottom: 2px solid #e4e2de;
+            background: transparent;
+            border-radius: 0;
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .underline-input:focus {
+            outline: none;
+            box-shadow: none;
+            border-bottom-color: #031839;
+        }
+        .canvas-frame { width: 1440px; height: 900px; margin: 0 auto; overflow: hidden; position: relative; }
+    </style>
+</head>
+<body class="text-on-surface bg-background">
+<div class="canvas-frame flex flex-col">
+<!-- TopNavBar (Shared Component Identity) -->
+<header class="h-[52px] w-full bg-surface-container-lowest border-b border-surface-container-highest flex justify-between items-center px-8 z-50">
+<div class="flex items-center gap-12">
+<span class="text-2xl font-headline font-bold text-primary tracking-tight" style="">SubSync</span>
+<nav class="hidden md:flex items-center gap-8 h-full">
+<a class="font-label text-xs uppercase tracking-wider text-slate-500 font-medium hover:text-primary transition-colors" href="#" style="">Subscriptions</a>
+<a class="font-label text-xs uppercase tracking-wider text-slate-500 font-medium hover:text-primary transition-colors" href="#" style="">Products</a>
+<a class="font-label text-xs uppercase tracking-wider text-slate-500 font-medium hover:text-primary transition-colors" href="#" style="">Reporting</a>
+<!-- Active State for Taxes (Contextually determined as sub-section of Configuration/Users) -->
+<a class="font-label text-xs uppercase tracking-wider px-4 py-2 bg-primary text-white rounded-md font-bold" href="#" style="">Taxes</a>
+<a class="font-label text-xs uppercase tracking-wider text-slate-500 font-medium hover:text-primary transition-colors" href="#" style="">Configuration</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary" style="">notifications</button>
+<div class="flex items-center gap-3 pl-4 border-l border-surface-container-highest">
+<img alt="User" class="w-8 h-8 rounded-full bg-surface-container-high" data-alt="professional headshot of a person in a minimalist environment with soft natural lighting and clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzk5rut4HVFAAnGQp8k3UMAnoFzUdMXx3uzxOqVM0GGW0g38gKKcyneOBqe16CuCu_KS77ies8kfBuHeC3e8HPQY7jBZ7jn6M6VZ_TlTYVk1awGyrAyPxDInrrCM1YEgmTe2rBExn7glB88CPD6CRd-CiTgwhbXXIDWkibxSlpV0BaSpyHTm36GjcAueVP0r4yJ-ZTOcZwpjp-vI2b7iLXr5xG0anWAVZfvuXZLVaPFIuSKlL5d2IR7CyseS54I6Db_j-r0idmz6gw" style=""/>
+<span class="font-label text-xs uppercase tracking-widest text-primary font-bold" style="">My Profile</span>
+</div>
+</div>
+</header>
+<!-- Action Bar -->
+<section class="h-[52px] w-full bg-surface-container-lowest border-b border-surface-container-highest flex items-center justify-between px-[28px]">
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-6 py-1.5 rounded-md font-label text-sm font-bold flex items-center gap-2 hover:opacity-90 transition-all" style="">
+<span class="material-symbols-outlined text-[18px]" style="">add</span>
+                    New
+                </button>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" style="">
+<span class="material-symbols-outlined" style="">delete</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" style="">
+<span class="material-symbols-outlined" style="">ios_share</span>
+</button>
+</div>
+</section>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto p-[48px] bg-surface-container-low flex flex-col items-center">
+<!-- Geometric Accents (Architectural precision) -->
+<div class="absolute inset-0 pointer-events-none opacity-5 overflow-hidden">
+<div class="absolute top-20 left-10 w-[1px] h-full bg-primary"></div>
+<div class="absolute top-[30%] -left-20 w-[400px] h-[1px] bg-primary rotate-45"></div>
+<div class="absolute bottom-40 right-20 w-[1px] h-[300px] bg-primary"></div>
+</div>
+<!-- Form Card (The Curated Ledger Centerpiece) -->
+<div class="relative w-full max-w-[420px] bg-surface-container-lowest rounded-xl shadow-[0_10px_40px_rgba(27,45,79,0.05)] p-[40px] z-10">
+<div class="space-y-12">
+<!-- Form Title Block -->
+<div class="flex flex-col gap-2">
+<label class="serif-heading italic text-[22px] text-on-tertiary-container" style="">Tax Name</label>
+<input class="underline-input w-full text-2xl font-headline italic text-primary pb-2 placeholder-surface-container-highest" placeholder="e.g. Value Added Tax" type="text"/>
+</div>
+<!-- Form Layout: Stacked Fields -->
+<div class="space-y-10">
+<!-- Tax Computation -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-extrabold" style="">Tax Computation</label>
+<div class="relative group">
+<select class="appearance-none bg-surface-container-high text-primary font-body text-sm px-4 py-2 pr-10 rounded-lg border-none focus:ring-2 focus:ring-primary cursor-pointer min-w-[180px]">
+<option>Percentage of Price</option>
+<option>Fixed Amount</option>
+<option>Group of Taxes</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[20px] text-primary" style="">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Amount Field -->
+<div class="flex flex-col gap-3">
+<div class="flex items-end justify-between gap-4">
+<label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-extrabold pb-2" style="">Amount</label>
+<div class="flex-1">
+<input class="underline-input w-full text-right text-lg font-headline text-primary" type="text" value="12%"/>
+</div>
+</div>
+<p class="text-[11px] text-on-tertiary-container font-body leading-relaxed flex items-start gap-1.5" style="">
+<span class="material-symbols-outlined text-[14px] mt-0.5" style='font-variation-settings: "FILL" 1;'>info</span>
+                                Enter fixed amount or percentage value e.g. 12%
+                            </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Page Label (Centered Footer Style) -->
+</main>
+<!-- Bottom Navigation Mobile Pivot (Hidden as per hierarchy rule for this width) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-lowest flex justify-around py-3 border-t border-surface-container-highest">
+<span class="material-symbols-outlined text-primary" style="">home</span>
+<span class="material-symbols-outlined text-on-surface-variant" style="">subscriptions</span>
+<span class="material-symbols-outlined text-on-surface-variant" style="">bar_chart</span>
+<span class="material-symbols-outlined text-on-surface-variant" style="">settings</span>
+</div>
+<button class="fixed bottom-8 right-8 w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:brightness-110 transition-all z-[100]" style="background-color: #E8A838;">
+<span class="material-symbols-outlined" style="color: #1B2D4F; font-size: 20px;">settings</span>
+</button></div>
+</body></html>

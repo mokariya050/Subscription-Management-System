@@ -159,6 +159,7 @@ class SubscriptionSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Subscription
         load_instance = True
+        exclude = ('metadata_json',)
         
     id = fields.Int(dump_only=True)
     account_id = fields.Int(required=True)
@@ -177,9 +178,15 @@ class SubscriptionSchema(SQLAlchemyAutoSchema):
     cancel_at_period_end = fields.Bool()
     canceled_at = fields.DateTime(allow_none=True)
     cancellation_reason = fields.Str()
-    metadata = fields.Dict()
+    metadata = fields.Method('get_metadata', deserialize='load_metadata')
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
+
+    def get_metadata(self, obj):
+        return obj.metadata_json
+
+    def load_metadata(self, value):
+        return value
 
 
 # Invoice Item Schema

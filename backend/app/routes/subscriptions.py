@@ -13,7 +13,7 @@ subscriptions_bp = Blueprint('subscriptions', __name__, url_prefix='/api/subscri
 @jwt_required()
 def list_subscriptions():
     """List user subscriptions"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -42,7 +42,7 @@ def list_subscriptions():
 @jwt_required()
 def get_subscription(subscription_id):
     """Get subscription by ID"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -65,7 +65,7 @@ def get_subscription(subscription_id):
 @jwt_required()
 def create_subscription():
     """Create new subscription"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -101,7 +101,7 @@ def create_subscription():
             current_period_end=current_time + timedelta(days=trial_days) if trial_days > 0 else current_time + timedelta(days=30),
             trial_starts_at=current_time if trial_days > 0 else None,
             trial_ends_at=(current_time + timedelta(days=trial_days)) if trial_days > 0 else None,
-            metadata=data.get('metadata')
+            metadata_json=data.get('metadata')
         )
         
         db.session.add(subscription)
@@ -156,7 +156,7 @@ def create_subscription():
 @jwt_required()
 def cancel_subscription(subscription_id):
     """Cancel subscription"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -199,7 +199,7 @@ def cancel_subscription(subscription_id):
 @jwt_required()
 def pause_subscription(subscription_id):
     """Pause subscription"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
@@ -234,7 +234,7 @@ def pause_subscription(subscription_id):
 @jwt_required()
 def resume_subscription(subscription_id):
     """Resume paused subscription"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.deleted_at:
