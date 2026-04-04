@@ -6,6 +6,7 @@ import ResetPasswordScreen from './screens/ResetPasswordScreen'
 import SplashLoadingBaseScreen from './screens/SplashLoadingScreen'
 import SplashSuccessBaseScreen from './screens/SplashSuccessScreen'
 import SplashErrorScreen from './screens/SplashErrorScreen'
+import HomeScreen from './screens/HomeScreen'
 
 function SplashLoadingScreen() {
     const navigate = useNavigate()
@@ -26,7 +27,7 @@ function SplashSuccessScreen() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            navigate('/login', { replace: true })
+            navigate('/home', { replace: true })
         }, 1600)
 
         return () => clearTimeout(timer)
@@ -45,6 +46,7 @@ export default function App() {
             <Route path="/login" element={<LoginScreen />} />
             <Route path="/signup" element={<SignUpScreen />} />
             <Route path="/reset-password" element={<ResetPasswordScreen />} />
+            <Route path="/home" element={<HomeScreen />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
     )
