@@ -75,13 +75,17 @@ const refreshAccessToken = async () => {
 const apiRequest = async (endpoint, options = {}) => {
     const url = `${API_BASE_URL}${endpoint}`
     let body = options.body
+    const isFormDataBody = typeof FormData !== 'undefined' && body instanceof FormData
     let headers = {
-        'Content-Type': 'application/json',
         ...options.headers,
     }
 
+    if (!isFormDataBody && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json'
+    }
+
     // Encrypt request body if applicable
-    const useEncryption = shouldEncrypt(endpoint) && options.method && ['POST', 'PUT', 'PATCH'].includes(options.method)
+    const useEncryption = !isFormDataBody && shouldEncrypt(endpoint) && options.method && ['POST', 'PUT', 'PATCH'].includes(options.method)
     if (useEncryption && body) {
         try {
             const bodyData = typeof body === 'string' ? JSON.parse(body) : body
@@ -143,14 +147,18 @@ const apiRequest = async (endpoint, options = {}) => {
                 const newToken = await refreshAccessToken()
                 // Retry the original request with the new token
                 let retryBody = options.body
+                const retryIsFormData = typeof FormData !== 'undefined' && retryBody instanceof FormData
                 let retryHeaders = {
-                    'Content-Type': 'application/json',
                     ...options.headers,
                     'Authorization': `Bearer ${newToken}`,
                 }
 
+                if (!retryIsFormData && !retryHeaders['Content-Type']) {
+                    retryHeaders['Content-Type'] = 'application/json'
+                }
+
                 // Re-encrypt if needed
-                const retryUseEncryption = shouldEncrypt(endpoint) && options.method && ['POST', 'PUT', 'PATCH'].includes(options.method)
+                const retryUseEncryption = !retryIsFormData && shouldEncrypt(endpoint) && options.method && ['POST', 'PUT', 'PATCH'].includes(options.method)
                 if (retryUseEncryption && retryBody) {
                     try {
                         const bodyData = typeof retryBody === 'string' ? JSON.parse(retryBody) : retryBody
@@ -480,6 +488,28 @@ export const productsAPI = {
     },
 
     /**
+     * Upload product images
+     */
+    uploadImages: async (productId, files) => {
+        const formData = new FormData()
+        files.forEach((file) => formData.append('images', file))
+
+        return apiRequest(`/products/${productId}/images`, {
+            method: 'POST',
+            body: formData,
+        })
+    },
+
+    /**
+     * Delete product image
+     */
+    deleteImage: async (productId, imageId) => {
+        return apiRequest(`/products/${productId}/images/${imageId}`, {
+            method: 'DELETE',
+        })
+    },
+
+    /**
      * Delete product
      */
     delete: async (productId) => {
@@ -541,6 +571,190 @@ export const productsAPI = {
         return apiRequest(`/plans/${planId}/features`, {
             method: 'POST',
             body: JSON.stringify(featureData),
+        })
+    },
+}
+
+// ==================== CUSTOMER STORE ENDPOINTS ====================
+
+export const storeAPI = {
+    getCustomerKey: () => {
+        let key = localStorage.getItem('customer_key')
+
+        if (!key) {
+            key = typeof crypto !== 'undefined' && crypto.randomUUID
+                ? crypto.randomUUID()
+                : `customer-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+            localStorage.setItem('customer_key', key)
+        }
+
+        return key
+    },
+
+    storeHeaders: () => ({
+        'X-Customer-Key': storeAPI.getCustomerKey(),
+    }),
+
+    getFilters: async () => {
+        return apiRequest('/store/filters', {
+            method: 'GET',
+            headers: storeAPI.storeHeaders(),
+        })
+    },
+
+    getInsights: async () => {
+        return apiRequest('/store/insights', {
+            method: 'GET',
+            headers: storeAPI.storeHeaders(),
+        })
+    },
+
+    chatAssistant: async ({ message, history = [], systemPrompt, context }) => {
+        return apiRequest('/store/chat', {
+            method: 'POST',
+            headers: storeAPI.storeHeaders(),
+            body: JSON.stringify({
+                message,
+                history,
+                system_prompt: systemPrompt,
+                context,
+            }),
+        })
+    },
+
+    getProduct: async (productId) => {
+        return apiRequest(`/store/products/${productId}`, {
+            method: 'GET',
+            headers: storeAPI.storeHeaders(),
+        })
+    },
+
+    getCatalog: async ({
+        q,
+        category,
+        priceRange,
+        sort = 'price_asc',
+        page = 1,
+        perPage = 16,
+    } = {}) => {
+        const params = new URLSearchParams()
+
+        if (q) params.set('q', q)
+        if (category && category !== 'all') params.set('category', category)
+        if (priceRange && priceRange !== 'all') params.set('price_range', priceRange)
+        if (sort) params.set('sort', sort)
+        params.set('page', String(page))
+        params.set('per_page', String(perPage))
+
+        const query = params.toString()
+        return apiRequest(`/store/catalog${query ? `?${query}` : ''}`, {
+            method: 'GET',
+            headers: storeAPI.storeHeaders(),
+        })
+    },
+
+    getCart: async () => {
+        return apiRequest('/store/cart', {
+            method: 'GET',
+            headers: storeAPI.storeHeaders(),
+        })
+    },
+
+    addCartItem: async ({ productId, planId, quantity = 1 }) => {
+        return apiRequest('/store/cart/items', {
+            method: 'POST',
+            headers: storeAPI.storeHeaders(),
+            body: JSON.stringify({
+                product_id: productId,
+                plan_id: planId,
+                quantity,
+            }),
+        })
+    },
+
+    updateCartItem: async (lineId, quantity) => {
+        return apiRequest(`/store/cart/items/${lineId}`, {
+            method: 'PUT',
+            headers: storeAPI.storeHeaders(),
+            body: JSON.stringify({ quantity }),
+        })
+    },
+
+    removeCartItem: async (lineId) => {
+        return apiRequest(`/store/cart/items/${lineId}`, {
+            method: 'DELETE',
+            headers: storeAPI.storeHeaders(),
+        })
+    },
+
+    applyDiscount: async (code) => {
+        return apiRequest('/store/cart/discount', {
+            method: 'POST',
+            headers: storeAPI.storeHeaders(),
+            body: JSON.stringify({ code }),
+        })
+    },
+
+    checkout: async ({ address, paymentMethod }) => {
+        return apiRequest('/store/checkout', {
+            method: 'POST',
+            headers: storeAPI.storeHeaders(),
+            body: JSON.stringify({
+                address,
+                payment_method: paymentMethod,
+            }),
+        })
+    },
+
+    verifyOrderPayment: async (orderId, payload) => {
+        return apiRequest(`/store/orders/${orderId}/verify-payment`, {
+            method: 'POST',
+            headers: storeAPI.storeHeaders(),
+            body: JSON.stringify(payload),
+        })
+    },
+
+    createOrderPaymentSession: async (orderId) => {
+        return apiRequest(`/store/orders/${orderId}/payment-session`, {
+            method: 'POST',
+            headers: storeAPI.storeHeaders(),
+            body: JSON.stringify({}),
+        })
+    },
+
+    getOrder: async (orderId) => {
+        return apiRequest(`/store/orders/${orderId}`, {
+            method: 'GET',
+            headers: storeAPI.storeHeaders(),
+        })
+    },
+
+    listOrders: async () => {
+        return apiRequest('/store/orders', {
+            method: 'GET',
+            headers: storeAPI.storeHeaders(),
+        })
+    },
+
+    getInvoice: async (orderId) => {
+        return apiRequest(`/store/orders/${orderId}/invoice`, {
+            method: 'GET',
+            headers: storeAPI.storeHeaders(),
+        })
+    },
+
+    getProfile: async () => {
+        return apiRequest('/store/profile', {
+            method: 'GET',
+            headers: storeAPI.storeHeaders(),
+        })
+    },
+
+    updateProfile: async (payload) => {
+        return apiRequest('/store/profile', {
+            method: 'PUT',
+            headers: storeAPI.storeHeaders(),
+            body: JSON.stringify(payload),
         })
     },
 }
@@ -817,6 +1031,7 @@ export default {
     authAPI,
     usersAPI,
     productsAPI,
+    storeAPI,
     subscriptionsAPI,
     invoicesAPI,
     configurationAPI,

@@ -2,12 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 const navItems = [
-    { key: 'subscriptions', to: '/home', label: 'Subscriptions' },
-    { key: 'invoices', to: '/invoices', label: 'Invoices' },
-    { key: 'products', to: '/products', label: 'Products' },
-    { key: 'contacts', to: '/contacts', label: 'Contacts' },
-    { key: 'users', to: '/users/detail', label: 'Users' },
-    { key: 'settings', to: '/configuration', label: 'Settings' },
+    { key: 'subscriptions', to: '/internal/home', label: 'Subscriptions' },
+    { key: 'invoices', to: '/internal/invoices', label: 'Invoices' },
+    { key: 'products', to: '/internal/products', label: 'Products' },
+    { key: 'contacts', to: '/internal/contacts', label: 'Contacts' },
+    { key: 'users', to: '/internal/users/detail', label: 'Users' },
+    { key: 'settings', to: '/internal/configuration', label: 'Settings' },
 ]
 
 export default function AppNavbar({ current, onLogout }) {
@@ -22,48 +22,48 @@ export default function AppNavbar({ current, onLogout }) {
     const quickNavItemRefs = useRef([])
 
     const settingsItems = [
-        { to: '/configuration/variant', label: 'Variants' },
-        { to: '/configuration/recurring-plan', label: 'Recurring Plan' },
-        { to: '/configuration/quotation-template', label: 'Quotation Template' },
-        { to: '/configuration/payment-term', label: 'Payment Term' },
-        { to: '/configuration/discount', label: 'Discount' },
-        { to: '/configuration/tax', label: 'Taxes' },
+        { to: '/internal/configuration/variant', label: 'Variants' },
+        { to: '/internal/configuration/recurring-plan', label: 'Recurring Plan' },
+        { to: '/internal/configuration/quotation-template', label: 'Quotation Template' },
+        { to: '/internal/configuration/payment-term', label: 'Payment Term' },
+        { to: '/internal/configuration/discount', label: 'Discount' },
+        { to: '/internal/configuration/tax', label: 'Taxes' },
     ]
 
     const routeOrder = [
-        '/home',
-        '/invoices',
-        '/products',
-        '/contacts',
-        '/users/detail',
-        '/configuration',
+        '/internal/home',
+        '/internal/invoices',
+        '/internal/products',
+        '/internal/contacts',
+        '/internal/users/detail',
+        '/internal/configuration',
     ]
 
     const isPathActive = (key) => {
         const path = location.pathname
 
         if (key === 'subscriptions') {
-            return path === '/home' || path.startsWith('/subscription') || path === '/quotation-sent' || path === '/draft-invoice'
+            return path === '/internal/home' || path.startsWith('/internal/subscription') || path === '/internal/quotation-sent' || path === '/internal/draft-invoice'
         }
 
         if (key === 'invoices') {
-            return path === '/invoices' || path.startsWith('/invoice/')
+            return path === '/internal/invoices' || path.startsWith('/internal/invoice/')
         }
 
         if (key === 'products') {
-            return path.startsWith('/products')
+            return path.startsWith('/internal/products')
         }
 
         if (key === 'contacts') {
-            return path.startsWith('/contacts')
+            return path.startsWith('/internal/contacts')
         }
 
         if (key === 'users') {
-            return path.startsWith('/users')
+            return path.startsWith('/internal/users')
         }
 
         if (key === 'settings') {
-            return path.startsWith('/configuration')
+            return path.startsWith('/internal/configuration')
         }
 
         return false
@@ -72,27 +72,27 @@ export default function AppNavbar({ current, onLogout }) {
     const activeRouteIndex = useMemo(() => {
         const path = location.pathname
 
-        if (path.startsWith('/subscription') || path === '/quotation-sent' || path === '/draft-invoice') {
+        if (path.startsWith('/internal/subscription') || path === '/internal/quotation-sent' || path === '/internal/draft-invoice') {
             return 0
         }
 
-        if (path === '/invoices' || path.startsWith('/invoice/')) {
+        if (path === '/internal/invoices' || path.startsWith('/internal/invoice/')) {
             return 1
         }
 
-        if (path.startsWith('/products')) {
+        if (path.startsWith('/internal/products')) {
             return 2
         }
 
-        if (path.startsWith('/contacts')) {
+        if (path.startsWith('/internal/contacts')) {
             return 3
         }
 
-        if (path.startsWith('/users')) {
+        if (path.startsWith('/internal/users')) {
             return 4
         }
 
-        if (path.startsWith('/configuration')) {
+        if (path.startsWith('/internal/configuration')) {
             return 5
         }
 
@@ -229,7 +229,7 @@ export default function AppNavbar({ current, onLogout }) {
                     Skip to content
                 </a>
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-                    <Link to="/home" className="flex items-center gap-3 rounded-full px-2 py-1 text-[#1b2d4f] focus-visible:ring-2 focus-visible:ring-primary">
+                    <Link to="/internal/home" className="flex items-center gap-3 rounded-full px-2 py-1 text-[#1b2d4f] focus-visible:ring-2 focus-visible:ring-primary">
                         <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-white shadow-sm">S</span>
                         <span className="text-2xl font-serif font-bold">SubSync</span>
                     </Link>

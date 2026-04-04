@@ -8,7 +8,27 @@ import Input from '../components/ui/Input'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 
-export default function LoginScreen() {
+const defaultHighlights = [
+    { title: 'Accessible by default', description: 'Keyboard-friendly controls, clear contrast, and visible focus states across the app.' },
+    { title: 'Reusable components', description: 'Shared layout and form primitives keep screens consistent and easier to maintain.' },
+]
+
+export default function LoginScreen({
+    audience = 'customer',
+    title,
+    description,
+    highlights,
+    appLabel,
+    heading,
+    subheading,
+    forgotPasswordPath = '/forgot-password',
+    signUpPath = '/signup',
+    signUpLabel = 'Create one',
+    signUpPrompt = "Don't have an account?",
+    postLoginPath = '/customer/home',
+    showDemoCredentials = true,
+    demoCredentials = ['Customer: customer@acme.com / password123'],
+}) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -24,7 +44,7 @@ export default function LoginScreen() {
 
         try {
             await login(email, password)
-            navigate('/home', { replace: true })
+            navigate(postLoginPath, { replace: true })
         } catch (err) {
             setError(err.message || 'Login failed. Please try again.')
         } finally {
@@ -34,18 +54,22 @@ export default function LoginScreen() {
 
     return (
         <AuthLayout
-            title="Managing clarity in a world of complexity."
-            description="SubSync streamlines subscription operations through a calm, editorial interface that keeps work readable and fast."
-            highlights={[
-                { title: 'Accessible by default', description: 'Keyboard-friendly controls, clear contrast, and visible focus states across the app.' },
-                { title: 'Reusable components', description: 'Shared layout and form primitives keep screens consistent and easier to maintain.' },
-            ]}
+            title={title || (audience === 'internal' ? 'Internal access for employees.' : 'Managing clarity in a world of complexity.')}
+            description={description || (audience === 'internal'
+                ? 'Sign in to the internal workspace used by admins and employees.'
+                : 'SubSync streamlines customer access through a calm, editorial interface that keeps work readable and fast.')}
+            highlights={highlights || (audience === 'internal'
+                ? [
+                    { title: 'Internal workspace', description: 'Separate access for staff and internal operations.' },
+                    { title: 'Secure sign-in', description: 'Employee access is isolated from customer accounts.' },
+                ]
+                : defaultHighlights)}
         >
             <Card className="mx-auto w-full max-w-[480px] p-6 sm:p-8 lg:p-10">
                 <div className="mb-8">
-                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">SubSync</p>
-                    <h2 className="mt-3 font-serif text-3xl font-bold text-primary">Welcome back</h2>
-                    <p className="mt-2 text-sm leading-6 text-on-surface-variant">Sign in to continue to your dashboard.</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">{appLabel || (audience === 'internal' ? 'SubSync Internal' : 'SubSync')}</p>
+                    <h2 className="mt-3 font-serif text-3xl font-bold text-primary">{heading || (audience === 'internal' ? 'Internal sign in' : 'Welcome back')}</h2>
+                    <p className="mt-2 text-sm leading-6 text-on-surface-variant">{subheading || (audience === 'internal' ? 'Use your employee credentials to continue.' : 'Sign in to continue to your dashboard.')}</p>
                 </div>
 
                 {error ? <Alert variant="error" className="mb-6">{error}</Alert> : null}
@@ -70,7 +94,7 @@ export default function LoginScreen() {
                         hint={
                             <span className="flex items-center justify-between gap-4">
                                 <span>Use your account password.</span>
-                                <Link to="/forgot-password" className="font-semibold text-primary underline-offset-4 hover:underline">
+                                <Link to={forgotPasswordPath} className="font-semibold text-primary underline-offset-4 hover:underline">
                                     Forgot password?
                                 </Link>
                             </span>
@@ -104,19 +128,28 @@ export default function LoginScreen() {
                 </form>
 
                 <div className="mt-8 border-t border-surface-container pt-6 text-center">
-                    <p className="text-sm text-on-surface-variant">
-                        Don&apos;t have an account?{' '}
-                        <Link to="/signup" className="font-semibold text-primary underline-offset-4 hover:underline">
-                            Create one
-                        </Link>
-                    </p>
+                    {signUpPath ? (
+                        <p className="text-sm text-on-surface-variant">
+                            {signUpPrompt}{' '}
+                            <Link to={signUpPath} className="font-semibold text-primary underline-offset-4 hover:underline">
+                                {signUpLabel}
+                            </Link>
+                        </p>
+                    ) : (
+                        <p className="text-sm text-on-surface-variant">
+                            Internal access is invitation-only. Contact an administrator if you need access.
+                        </p>
+                    )}
                 </div>
 
-                <div className="mt-6 rounded-2xl border border-secondary/20 bg-secondary-container px-4 py-4 text-sm text-on-secondary-container">
-                    <p className="font-semibold text-primary">Demo credentials</p>
-                    <p className="mt-2 break-words">Admin: admin@acme.com / password123</p>
-                    <p className="break-words">Customer: customer@acme.com / password123</p>
-                </div>
+                {showDemoCredentials && demoCredentials.length > 0 ? (
+                    <div className="mt-6 rounded-2xl border border-secondary/20 bg-secondary-container px-4 py-4 text-sm text-on-secondary-container">
+                        <p className="font-semibold text-primary">Demo credentials</p>
+                        {demoCredentials.map((line) => (
+                            <p key={line} className="mt-2 break-words">{line}</p>
+                        ))}
+                    </div>
+                ) : null}
             </Card>
         </AuthLayout>
     )

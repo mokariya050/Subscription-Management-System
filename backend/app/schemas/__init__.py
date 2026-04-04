@@ -3,7 +3,8 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, SQLAlchemySchema, auto_
 from app.models import (
     Account, User, UserRole, Address, PaymentMethod, Product, Plan,
     PlanFeature, Subscription, Invoice, InvoiceItem, Payment, AuditLog,
-    Attribute, AttributeValue, QuotationTemplate, Discount, Tax, PaymentTerm
+    Attribute, AttributeValue, QuotationTemplate, Discount, Tax, PaymentTerm,
+    ProductImage,
 )
 
 
@@ -118,8 +119,33 @@ class ProductSchema(SQLAlchemyAutoSchema):
     base_price_cents = fields.Int()
     currency = fields.Str(validate=validate.Length(equal=3), dump_default='USD')
     is_active = fields.Bool()
+    image_assets = fields.Method('get_image_assets', dump_only=True)
+    image_urls = fields.Method('get_image_urls', dump_only=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
+
+    def get_image_assets(self, obj):
+        if not hasattr(obj, 'images'):
+            return []
+        return [
+            {
+                'id': image.id,
+                'url': image.image_url,
+                'sort_order': image.sort_order,
+                'is_primary': bool(image.is_primary),
+            }
+            for image in obj.images.order_by(ProductImage.sort_order.asc(), ProductImage.id.asc()).all()
+            if image.image_url
+        ]
+
+    def get_image_urls(self, obj):
+        if not hasattr(obj, 'images'):
+            return []
+        return [
+            image.image_url
+            for image in obj.images.order_by(ProductImage.sort_order.asc(), ProductImage.id.asc()).all()
+            if image.image_url
+        ]
 
 
 # Plan Feature Schema

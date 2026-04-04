@@ -1,12 +1,78 @@
 """Product and Plan management routes"""
+import os
+from pathlib import Path
+from uuid import uuid4
+
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.models import Product, Plan, PlanFeature, User, db
+from werkzeug.utils import secure_filename
+
+from app.models import Product, Plan, PlanFeature, ProductImage, User, db
 from app.schemas import ProductSchema, PlanSchema, PlanFeatureSchema
 from app.utils import success_response, error_response, admin_required, create_audit_log, is_json_request
 
 products_bp = Blueprint('products', __name__, url_prefix='/api/products')
 plans_bp = Blueprint('plans', __name__, url_prefix='/api/plans')
+
+ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
+MAX_IMAGE_FILES_PER_UPLOAD = 8
+
+
+def _uploads_dir():
+    return Path(__file__).resolve().parents[1] / 'static' / 'uploads' / 'products'
+
+
+def _is_allowed_image(filename):
+    if not filename or '.' not in filename:
+        return False
+    extension = filename.rsplit('.', 1)[1].lower()
+    return extension in ALLOWED_IMAGE_EXTENSIONS
+
+
+def _save_uploaded_image(file_storage):
+    filename = secure_filename(file_storage.filename or '')
+    if not _is_allowed_image(filename):
+        return None
+
+    extension = filename.rsplit('.', 1)[1].lower()
+    generated_name = f"{uuid4().hex}.{extension}"
+
+    uploads_dir = _uploads_dir()
+    uploads_dir.mkdir(parents=True, exist_ok=True)
+
+    destination = uploads_dir / generated_name
+    file_storage.save(destination)
+
+    return f"/static/uploads/products/{generated_name}"
+
+
+def _delete_image_file(image_url):
+    if not image_url or not image_url.startswith('/static/uploads/products/'):
+        return
+
+    uploads_dir = _uploads_dir()
+    file_name = image_url.rsplit('/', 1)[-1]
+    target = uploads_dir / file_name
+
+    if target.exists() and target.is_file():
+        target.unlink()
+
+
+def _normalize_image_urls(value):
+    if not isinstance(value, list):
+        return []
+
+    normalized = []
+    seen = set()
+    for item in value:
+        if not isinstance(item, str):
+            continue
+        image_url = item.strip()
+        if not image_url or image_url in seen:
+            continue
+        seen.add(image_url)
+        normalized.append(image_url)
+    return normalized
 
 
 # Product Routes
@@ -70,6 +136,17 @@ def create_product():
         )
         db.session.add(product)
         db.session.flush()
+
+        image_urls = _normalize_image_urls(data.get('image_urls'))
+        for index, image_url in enumerate(image_urls):
+            db.session.add(
+                ProductImage(
+                    product_id=product.id,
+                    image_url=image_url,
+                    sort_order=index,
+                    is_primary=index == 0,
+                )
+            )
         
         create_audit_log(current_user_id, current_user.account_id, 'product_created', 'products', product.id,
                         new_value=ProductSchema().dump(product))
@@ -107,8 +184,23 @@ def update_product(product_id):
             product.description = data['description']
         if 'base_price_cents' in data:
             product.base_price_cents = data['base_price_cents']
+        if 'currency' in data and data['currency']:
+            product.currency = data['currency']
         if 'is_active' in data:
             product.is_active = data['is_active']
+
+        if 'image_urls' in data:
+            image_urls = _normalize_image_urls(data.get('image_urls'))
+            product.images.delete()
+            for index, image_url in enumerate(image_urls):
+                db.session.add(
+                    ProductImage(
+                        product_id=product.id,
+                        image_url=image_url,
+                        sort_order=index,
+                        is_primary=index == 0,
+                    )
+                )
         
         db.session.commit()
         
@@ -121,6 +213,78 @@ def update_product(product_id):
     except Exception as e:
         db.session.rollback()
         return error_response(f'Update failed: {str(e)}', 400)
+
+
+@products_bp.route('/<int:product_id>/images', methods=['POST'])
+@admin_required
+def upload_product_images(product_id):
+    """Upload product photos and persist image records (admin only)."""
+    product = Product.query.get(product_id)
+    if not product:
+        return error_response('Product not found', 404)
+
+    files = request.files.getlist('images')
+    if not files:
+        return error_response('No image files provided', 400)
+
+    if len(files) > MAX_IMAGE_FILES_PER_UPLOAD:
+        return error_response(f'You can upload up to {MAX_IMAGE_FILES_PER_UPLOAD} images at once', 400)
+
+    saved_urls = []
+
+    try:
+        current_max = db.session.query(db.func.max(ProductImage.sort_order)).filter_by(product_id=product.id).scalar()
+        next_sort = int(current_max or 0)
+
+        for file_storage in files:
+            saved_url = _save_uploaded_image(file_storage)
+            if not saved_url:
+                continue
+
+            next_sort += 1
+            image = ProductImage(
+                product_id=product.id,
+                image_url=saved_url,
+                sort_order=next_sort,
+                is_primary=(next_sort == 1),
+            )
+            db.session.add(image)
+            saved_urls.append(saved_url)
+
+        if not saved_urls:
+            return error_response('No valid images were uploaded. Allowed formats: png, jpg, jpeg, webp, gif', 400)
+
+        db.session.commit()
+        return success_response(ProductSchema().dump(product), 'Images uploaded')
+    except Exception as e:
+        db.session.rollback()
+        for image_url in saved_urls:
+            _delete_image_file(image_url)
+        return error_response(f'Image upload failed: {str(e)}', 400)
+
+
+@products_bp.route('/<int:product_id>/images/<int:image_id>', methods=['DELETE'])
+@admin_required
+def delete_product_image(product_id, image_id):
+    """Delete a specific product photo (admin only)."""
+    product = Product.query.get(product_id)
+    if not product:
+        return error_response('Product not found', 404)
+
+    image = ProductImage.query.filter_by(id=image_id, product_id=product.id).first()
+    if not image:
+        return error_response('Image not found', 404)
+
+    image_url = image.image_url
+
+    try:
+        db.session.delete(image)
+        db.session.commit()
+        _delete_image_file(image_url)
+        return success_response(ProductSchema().dump(product), 'Image deleted')
+    except Exception as e:
+        db.session.rollback()
+        return error_response(f'Failed to delete image: {str(e)}', 400)
 
 
 # Plan Routes

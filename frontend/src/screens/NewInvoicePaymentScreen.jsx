@@ -180,7 +180,7 @@ export default function NewInvoicePaymentScreen() {
                 <div className="flex items-center gap-2">
                     <button type="button" onClick={onSendInvoice} disabled={sending || !invoiceId} className="px-3 py-2 border border-[#d0cec9] rounded-md text-sm disabled:opacity-60">Send</button>
                     <button type="button" onClick={onPrintInvoice} disabled={!invoice || loading} className="px-3 py-2 border border-[#d0cec9] rounded-md text-sm disabled:opacity-60">Print</button>
-                    <button type="button" onClick={() => navigate('/home')} className="px-3 py-2 border border-[#d0cec9] rounded-md text-sm">Close</button>
+                    <button type="button" onClick={() => navigate('/internal/home')} className="px-3 py-2 border border-[#d0cec9] rounded-md text-sm">Close</button>
                 </div>
             }
         >
@@ -194,8 +194,8 @@ export default function NewInvoicePaymentScreen() {
                         <h3 className="text-xl font-semibold text-[#1b2d4f]">Choose an invoice</h3>
                         <p className="mt-2 text-sm text-slate-600">This page can be opened directly from the Invoices page or by selecting an invoice below.</p>
                         <div className="mt-4 flex items-center justify-center gap-3">
-                            <button type="button" onClick={() => navigate('/invoices')} className="px-4 py-2 border border-[#d0cec9] rounded-md text-sm">Go to Invoices</button>
-                            <button type="button" onClick={() => navigate('/invoice/new')} className="px-4 py-2 bg-[#1b2d4f] text-white rounded-md text-sm">Create New Invoice</button>
+                            <button type="button" onClick={() => navigate('/internal/invoices')} className="px-4 py-2 border border-[#d0cec9] rounded-md text-sm">Go to Invoices</button>
+                            <button type="button" onClick={() => navigate('/internal/invoice/new')} className="px-4 py-2 bg-[#1b2d4f] text-white rounded-md text-sm">Create New Invoice</button>
                         </div>
                     </div>
 
@@ -219,7 +219,7 @@ export default function NewInvoicePaymentScreen() {
                                             <td className="px-4 py-3 text-right">
                                                 <button
                                                     type="button"
-                                                    onClick={() => navigate(`/invoice/new/payment?invoiceId=${row.id}`)}
+                                                    onClick={() => navigate(`/internal/invoice/new/payment?invoiceId=${row.id}`)}
                                                     className="px-3 py-1.5 border border-[#d0cec9] rounded text-xs"
                                                 >
                                                     Open

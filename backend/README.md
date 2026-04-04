@@ -40,7 +40,7 @@ Flask-based REST API for the Subscription Management System. Provides complete s
   - Payment recording
   - Multi-partial payments
   - Payment status tracking
-  - Mock payment processing (for demo)
+  - Razorpay checkout for customer storefront payments
 
 - ✅ **Audit Logging**
   - Action audit trail
@@ -131,6 +131,17 @@ SMTP_USE_SSL=false
 
 For Gmail, use an App Password (not your normal account password).
 
+### 3.2 Configure Razorpay Checkout
+
+To enable real customer payments from cart/invoice screens, add Razorpay keys in `.env`:
+
+```env
+RAZORPAY_KEY_ID=rzp_test_your_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+```
+
+Use test keys for development and live keys in production.
+
 ### 4. Run the Application
 
 ```bash
@@ -191,6 +202,11 @@ Server will start on `http://127.0.0.1:5000`
 - `GET /api/payments/` - List user payments
 - `GET /api/payments/<id>` - Get payment
 - `POST /api/payments/` - Create payment
+
+### Customer Storefront Checkout
+- `POST /api/store/checkout` - Create persisted invoice/payment and Razorpay order
+- `POST /api/store/orders/<id>/verify-payment` - Verify Razorpay payment signature and settle invoice
+- `POST /api/store/orders/<id>/payment-session` - Create fresh Razorpay payment session for unpaid order
 
 ## Request/Response Examples
 

@@ -19,9 +19,13 @@ export default function ProductNewScreen() {
     slug: '',
     product_type: 'subscription',
     description: '',
+    base_price_cents: '',
+    currency: 'USD',
+    image_urls_text: '',
     is_active: true,
   })
   const [saving, setSaving] = useState(false)
+  const [imageFiles, setImageFiles] = useState([])
   const [error, setError] = useState('')
 
   const handleChange = (field, value) => {
@@ -41,14 +45,25 @@ export default function ProductNewScreen() {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
 
-      await productsAPI.create({
+      const createResponse = await productsAPI.create({
         name: formData.name,
         slug: generatedSlug,
         product_type: formData.product_type,
         description: formData.description,
+        base_price_cents: formData.base_price_cents === '' ? null : Number(formData.base_price_cents),
+        currency: formData.currency || 'USD',
+        image_urls: formData.image_urls_text
+          .split('\n')
+          .map((line) => line.trim())
+          .filter(Boolean),
         is_active: formData.is_active,
       })
-      navigate('/products', { replace: true })
+
+      const createdProductId = createResponse?.data?.id
+      if (createdProductId && imageFiles.length > 0) {
+        await productsAPI.uploadImages(createdProductId, imageFiles)
+      }
+      navigate('/internal/products', { replace: true })
     } catch (err) {
       setError(err.message || 'Failed to create product')
     } finally {
@@ -58,11 +73,11 @@ export default function ProductNewScreen() {
 
   const onLogout = async () => {
     await logout()
-    navigate('/login', { replace: true })
+    navigate('/internal/login', { replace: true })
   }
 
   if (!user) {
-    navigate('/login', { replace: true })
+    navigate('/internal/login', { replace: true })
     return null
   }
 
@@ -119,6 +134,50 @@ export default function ProductNewScreen() {
             />
           </Field>
 
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field label="Base price (cents)">
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                value={formData.base_price_cents}
+                onChange={(e) => handleChange('base_price_cents', e.target.value)}
+                placeholder="e.g. 9999"
+              />
+            </Field>
+
+            <Field label="Currency">
+              <Input
+                type="text"
+                value={formData.currency}
+                onChange={(e) => handleChange('currency', e.target.value.toUpperCase())}
+                placeholder="USD"
+                maxLength={3}
+              />
+            </Field>
+          </div>
+
+          <Field label="Product photo URLs">
+            <Textarea
+              value={formData.image_urls_text}
+              onChange={(e) => handleChange('image_urls_text', e.target.value)}
+              placeholder={"One URL per line\nhttps://example.com/photo-1.jpg\nhttps://example.com/photo-2.jpg"}
+              rows={4}
+            />
+          </Field>
+
+          <Field label="Upload product photos">
+            <Input
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              multiple
+              onChange={(e) => setImageFiles(Array.from(e.target.files || []))}
+            />
+            {imageFiles.length > 0 ? (
+              <p className="mt-2 text-xs text-on-surface-variant">{imageFiles.length} file(s) selected for upload after product creation.</p>
+            ) : null}
+          </Field>
+
           <label className="flex items-start gap-3 rounded-2xl border border-outline-variant bg-surface-container-low px-4 py-3">
             <input
               type="checkbox"
@@ -136,7 +195,7 @@ export default function ProductNewScreen() {
             <Button type="submit" disabled={saving} className="sm:flex-1">
               {saving ? 'Creating...' : 'Create product'}
             </Button>
-            <Button type="button" variant="secondary" onClick={() => navigate('/products')} className="sm:flex-1">
+            <Button type="button" variant="secondary" onClick={() => navigate('/internal/products')} className="sm:flex-1">
               Cancel
             </Button>
           </div>

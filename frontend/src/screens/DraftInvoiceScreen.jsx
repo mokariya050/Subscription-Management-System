@@ -8,7 +8,7 @@ export default function DraftInvoiceScreen() {
             title="Draft Invoice"
             subtitle="Review draft lines before confirmation"
             maxWidth="max-w-4xl"
-            actions={<Link to="/invoice/new" className="bg-[#1b2d4f] text-white px-5 py-2 rounded-md text-sm font-semibold">Open Invoice Form</Link>}
+            actions={<Link to="/internal/invoice/new" className="bg-[#1b2d4f] text-white px-5 py-2 rounded-md text-sm font-semibold">Open Invoice Form</Link>}
         >
             <div className="bg-white border border-[#e5e3df] rounded-xl p-8">
                 <table className="w-full text-left">

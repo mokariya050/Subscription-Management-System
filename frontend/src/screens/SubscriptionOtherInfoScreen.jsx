@@ -104,16 +104,16 @@ export default function SubscriptionOtherInfoScreen() {
             const subscriptionId = response.data?.subscription?.id
             const invoiceId = response.data?.invoice?.id
             if (subscriptionId) {
-                navigate(`/subscription/other-info?id=${subscriptionId}`, { replace: true })
+                navigate(`/internal/subscription/other-info?id=${subscriptionId}`, { replace: true })
                 return
             }
 
             if (invoiceId) {
-                navigate(`/invoice/new/payment?invoiceId=${invoiceId}`)
+                navigate(`/internal/invoice/new/payment?invoiceId=${invoiceId}`)
                 return
             }
 
-            navigate('/home')
+            navigate('/internal/home')
         } catch (err) {
             setError(err.message || 'Failed to create subscription')
         } finally {
@@ -182,7 +182,7 @@ export default function SubscriptionOtherInfoScreen() {
             actions={
                 subscriptionId ? (
                     <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => navigate('/subscription/other-info')} className="px-4 py-2 border border-[#d0cec9] rounded-md text-sm">New</button>
+                        <button type="button" onClick={() => navigate('/internal/subscription/other-info')} className="px-4 py-2 border border-[#d0cec9] rounded-md text-sm">New</button>
                         <button type="button" onClick={() => onStatusAction('pause')} disabled={saving} className="px-4 py-2 border border-[#d0cec9] rounded-md text-sm disabled:opacity-60">Pause</button>
                         <button type="button" onClick={() => onStatusAction('resume')} disabled={saving} className="px-4 py-2 border border-[#d0cec9] rounded-md text-sm disabled:opacity-60">Resume</button>
                         <button type="button" onClick={() => onStatusAction('cancel')} disabled={saving} className="px-4 py-2 border border-red-300 text-red-700 rounded-md text-sm disabled:opacity-60">Cancel</button>
@@ -253,7 +253,7 @@ export default function SubscriptionOtherInfoScreen() {
                                                         <div className="flex justify-end gap-2">
                                                             <button
                                                                 type="button"
-                                                                onClick={() => navigate(`/invoice/new/payment?invoiceId=${invoice.id}&subscriptionId=${subscriptionId}`)}
+                                                                onClick={() => navigate(`/internal/invoice/new/payment?invoiceId=${invoice.id}&subscriptionId=${subscriptionId}`)}
                                                                 className="px-3 py-1.5 border border-[#d0cec9] rounded text-xs"
                                                             >
                                                                 Pay
@@ -288,8 +288,8 @@ export default function SubscriptionOtherInfoScreen() {
                         <div className="bg-white border border-[#e5e3df] rounded-xl p-5">
                             <h4 className="font-bold mb-3">Quick Actions</h4>
                             <div className="space-y-2">
-                                <button type="button" onClick={() => navigate('/invoice/new')} className="w-full px-4 py-2 border border-[#d0cec9] rounded-md text-sm">New Invoice</button>
-                                <button type="button" onClick={() => navigate('/home')} className="w-full px-4 py-2 border border-[#d0cec9] rounded-md text-sm">Back to Subscriptions</button>
+                                <button type="button" onClick={() => navigate('/internal/invoice/new')} className="w-full px-4 py-2 border border-[#d0cec9] rounded-md text-sm">New Invoice</button>
+                                <button type="button" onClick={() => navigate('/internal/home')} className="w-full px-4 py-2 border border-[#d0cec9] rounded-md text-sm">Back to Subscriptions</button>
                             </div>
                         </div>
                     </div>
@@ -375,7 +375,7 @@ export default function SubscriptionOtherInfoScreen() {
                     <div className="flex justify-end gap-3 pt-2">
                         <button
                             type="button"
-                            onClick={() => navigate('/home')}
+                            onClick={() => navigate('/internal/home')}
                             className="px-5 py-2 border border-[#d0cec9] rounded-md text-sm"
                         >
                             Cancel

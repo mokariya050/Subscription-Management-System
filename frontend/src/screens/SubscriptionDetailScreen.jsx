@@ -36,7 +36,7 @@ export default function SubscriptionDetailScreen() {
         }
 
         if (!user) {
-            navigate('/login', { replace: true })
+            navigate('/internal/login', { replace: true })
             return
         }
 
@@ -121,7 +121,7 @@ export default function SubscriptionDetailScreen() {
 
     const onLogout = async () => {
         await logout()
-        navigate('/login', { replace: true })
+        navigate('/internal/login', { replace: true })
     }
 
     return (
@@ -133,7 +133,7 @@ export default function SubscriptionDetailScreen() {
             subtitle={subscriptionId ? `Subscription number #${subscriptionId}` : 'Details'}
             actions={
                 <Link
-                    to="/invoice/new"
+                    to="/internal/invoice/new"
                     className="inline-flex items-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                     Create invoice

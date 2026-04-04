@@ -3,17 +3,41 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import AppPage from './AppPage'
 
-export default function ProtectedAppPage({ children, ...pageProps }) {
+const hasAdminRole = (user) => {
+    if (!user) {
+        return false
+    }
+
+    const roles = user.roles
+    if (!Array.isArray(roles)) {
+        return false
+    }
+
+    return roles.some((role) => {
+        if (typeof role === 'string') {
+            return role === 'admin'
+        }
+
+        return role?.role === 'admin'
+    })
+}
+
+export default function AdminProtectedAppPage({ children, ...pageProps }) {
     const { user, loading, logout } = useAuth()
     const navigate = useNavigate()
 
     useEffect(() => {
         if (loading) {
-            return // Still loading auth, wait
+            return
         }
 
         if (!user) {
             navigate('/internal/login', { replace: true })
+            return
+        }
+
+        if (!hasAdminRole(user)) {
+            navigate('/internal/home', { replace: true })
         }
     }, [navigate, user, loading])
 
@@ -22,8 +46,9 @@ export default function ProtectedAppPage({ children, ...pageProps }) {
         navigate('/internal/login', { replace: true })
     }
 
-    // Show nothing while auth is loading
-    if (loading || !user) return null
+    if (loading || !user || !hasAdminRole(user)) {
+        return null
+    }
 
     return (
         <AppPage {...pageProps} onLogout={onLogout}>

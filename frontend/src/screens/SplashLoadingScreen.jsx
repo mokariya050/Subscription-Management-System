@@ -6,7 +6,7 @@ export default function SplashLoadingScreen() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            navigate('/home', { replace: true })
+            navigate('/internal/home', { replace: true })
         }, 2000)
         return () => clearTimeout(timer)
     }, [navigate])
@@ -15,7 +15,7 @@ export default function SplashLoadingScreen() {
         <div className="bg-surface font-body text-on-surface m-0 p-0 overflow-hidden relative w-full h-screen flex flex-col items-center justify-center">
             {/* Background Texture */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle, #1b2d4f 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
-            
+
             {/* Geometric Accent */}
             <div className="absolute top-1/4 left-1/4 w-32 h-px bg-primary opacity-5 transform -rotate-45"></div>
             <div className="absolute bottom-1/4 right-1/4 w-48 h-px bg-primary opacity-5 transform rotate-12"></div>
@@ -28,12 +28,12 @@ export default function SplashLoadingScreen() {
                         sync_saved_locally
                     </span>
                 </div>
-                
+
                 {/* Brand Name */}
                 <h1 className="font-serif text-[32px] text-primary font-bold tracking-tight mb-1 italic">
                     SubSync
                 </h1>
-                
+
                 {/* Tagline */}
                 <p className="font-label text-[12px] text-on-surface-variant tracking-[0.2em] uppercase mb-12 font-bold opacity-60">
                     Subscription & Billing Ledger

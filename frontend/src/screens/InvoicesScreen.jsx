@@ -90,7 +90,7 @@ export default function InvoicesScreen() {
             title="Invoices"
             subtitle="Manage, send, print, and review all invoices"
             maxWidth="max-w-7xl"
-            actions={<Link to="/invoice/new" className="inline-flex items-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-container">New invoice</Link>}
+            actions={<Link to="/internal/invoice/new" className="inline-flex items-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-container">New invoice</Link>}
         >
             {error ? <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
 
@@ -141,7 +141,7 @@ export default function InvoicesScreen() {
                                             <div className="flex justify-end gap-2">
                                                 <button
                                                     type="button"
-                                                    onClick={() => navigate(`/invoice/new/payment?invoiceId=${invoice.id}`)}
+                                                    onClick={() => navigate(`/internal/invoice/new/payment?invoiceId=${invoice.id}`)}
                                                     className="rounded-lg border border-outline-variant px-3 py-1.5 text-xs font-semibold"
                                                 >
                                                     Open

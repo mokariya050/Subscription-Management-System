@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import ProtectedAppPage from '../components/ProtectedAppPage'
+import AdminProtectedAppPage from '../components/AdminProtectedAppPage'
 import { usersAPI } from '../services/apiClient'
 
 export default function UserDetailScreen() {
@@ -38,7 +38,7 @@ export default function UserDetailScreen() {
     useEffect(() => {
         if (authLoading) return
         if (!currentUser) {
-            navigate('/login', { replace: true })
+            navigate('/internal/login', { replace: true })
             return
         }
     }, [currentUser, authLoading, navigate])
@@ -80,7 +80,7 @@ export default function UserDetailScreen() {
     }, [userId, users])
 
     const handleUserSelect = (user) => {
-        navigate(`/users/detail?id=${user.id}`)
+        navigate(`/internal/users/detail?id=${user.id}`)
     }
 
     const handleInputChange = (field, value) => {
@@ -164,7 +164,7 @@ export default function UserDetailScreen() {
 
             if (selectedUser?.id === user.id) {
                 setSelectedUser(null)
-                navigate('/users/detail')
+                navigate('/internal/users/detail')
             }
 
             alert('User deactivated successfully')
@@ -220,11 +220,11 @@ export default function UserDetailScreen() {
 
     const onLogout = async () => {
         await logout()
-        navigate('/login', { replace: true })
+        navigate('/internal/login', { replace: true })
     }
 
     return (
-        <ProtectedAppPage
+        <AdminProtectedAppPage
             current="users"
             onLogout={onLogout}
             title="User Management"
@@ -456,6 +456,6 @@ export default function UserDetailScreen() {
                     )}
                 </div>
             </div>
-        </ProtectedAppPage>
+        </AdminProtectedAppPage>
     )
 }

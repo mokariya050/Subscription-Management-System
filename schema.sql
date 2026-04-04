@@ -505,9 +505,28 @@ VALUES (
 );
 
 -- ============================================================================
+-- FILE UPLOAD EXTENSION: PRODUCT IMAGES
+-- Mirrors backend ProductImage model used by actual product photo upload APIs.
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS product_images (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  product_id BIGINT UNSIGNED NOT NULL,
+  image_url VARCHAR(500) NOT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  is_primary TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY idx_product_images_product_id (product_id),
+  KEY idx_product_images_sort_order (sort_order),
+  CONSTRAINT fk_product_images_product
+    FOREIGN KEY (product_id) REFERENCES products(id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- ============================================================================
 -- SUMMARY
 -- ============================================================================
--- Total Tables: 13
+-- Total Tables: 14
 -- Relationships: All enforced via FOREIGN KEYS
 -- Indexes: Optimized for common queries
 -- Sample Data: Basic test data included

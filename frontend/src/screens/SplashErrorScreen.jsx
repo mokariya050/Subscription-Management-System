@@ -5,7 +5,7 @@ export default function SplashErrorScreen() {
         <div className="bg-surface font-body text-on-surface m-0 p-0 overflow-hidden relative w-full h-screen flex flex-col items-center justify-center">
             {/* Background Texture */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle, #1b2d4f 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
-            
+
             {/* Geometric Accent */}
             <div className="absolute top-1/4 left-1/4 w-32 h-px bg-primary opacity-5 transform -rotate-45"></div>
             <div className="absolute bottom-1/4 right-1/4 w-48 h-px bg-primary opacity-5 transform rotate-12"></div>
@@ -18,12 +18,12 @@ export default function SplashErrorScreen() {
                         report_gmailerrorred
                     </span>
                 </div>
-                
+
                 {/* Brand Name */}
                 <h1 className="font-serif text-[32px] text-primary font-bold tracking-tight mb-1 italic">
                     SubSync
                 </h1>
-                
+
                 {/* Tagline */}
                 <p className="font-label text-[12px] text-on-surface-variant tracking-[0.2em] uppercase mb-12 font-bold opacity-60">
                     Subscription & Billing Ledger
@@ -34,10 +34,10 @@ export default function SplashErrorScreen() {
                     <div className="w-[200px] h-[3px] bg-error/10 rounded-full overflow-hidden mb-4 relative">
                         <div className="h-full bg-error rounded-full" style={{ width: '33.33%' }}></div>
                     </div>
-                    
+
                     <p className="text-error font-bold text-sm mb-4 uppercase tracking-widest">Synchronization Interrupted</p>
-                    
-                    <Link to="/login" className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-[0.2em] hover:underline bg-surface-container px-6 py-2 rounded-full transition-all">
+
+                    <Link to="/internal/login" className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-[0.2em] hover:underline bg-surface-container px-6 py-2 rounded-full transition-all">
                         <span className="material-symbols-outlined text-lg">refresh</span>
                         Retry Connection
                     </Link>

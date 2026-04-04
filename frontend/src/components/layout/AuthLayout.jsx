@@ -6,32 +6,48 @@ export default function AuthLayout({
     children,
 }) {
     return (
-        <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(77,94,131,0.12),_transparent_32%),linear-gradient(180deg,#fbf9f5_0%,#f5f3ef_100%)] text-on-surface">
-            <div className="grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
-                <section className="relative hidden overflow-hidden border-r border-white/50 bg-primary px-10 py-12 text-on-primary lg:flex lg:flex-col lg:justify-between">
-                    <div className="absolute inset-0 opacity-15" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.22) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
-                    <div className="relative z-10 max-w-xl">
-                        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary-fixed-dim">{brand}</p>
-                        <h1 className="mt-6 max-w-lg font-serif text-5xl font-bold leading-tight text-white">{title}</h1>
-                        <p className="mt-6 max-w-lg text-base leading-7 text-primary-fixed-dim">{description}</p>
+        <div className="min-h-screen text-[#1b2d4f]">
+            <header className="sticky top-0 z-20 border-b border-white/60 bg-white/80 backdrop-blur-xl">
+                <a
+                    href="#auth-main"
+                    className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary"
+                >
+                    Skip to content
+                </a>
+                <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+                    <div className="flex items-center gap-3 rounded-full px-2 py-1 text-[#1b2d4f]">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-white shadow-sm">S</span>
+                        <span className="text-2xl font-serif font-bold">{brand}</span>
                     </div>
+                </div>
+            </header>
 
-                    {highlights.length > 0 ? (
-                        <div className="relative z-10 grid gap-4">
-                            {highlights.map((item) => (
-                                <div key={item.title} className="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
-                                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary-fixed-dim">{item.title}</p>
-                                    <p className="mt-1 text-sm leading-6 text-white/90">{item.description}</p>
+            <main id="auth-main" className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+                <section className="rounded-[2rem] border border-white/70 bg-white/75 p-5 shadow-[0_18px_50px_rgba(27,45,79,0.08)] backdrop-blur-sm sm:p-7 lg:p-8">
+                    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+                        <section className="rounded-[1.75rem] border border-outline-variant bg-surface-container-low p-6 sm:p-7">
+                            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-on-surface-variant">{brand}</p>
+                            <h1 className="mt-4 font-serif text-3xl font-bold leading-tight text-primary sm:text-4xl">{title}</h1>
+                            <p className="mt-4 text-sm leading-6 text-on-surface-variant sm:text-base">{description}</p>
+
+                            {highlights.length > 0 ? (
+                                <div className="mt-6 grid gap-3">
+                                    {highlights.map((item) => (
+                                        <div key={item.title} className="rounded-2xl border border-outline-variant bg-white p-4">
+                                            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{item.title}</p>
+                                            <p className="mt-1 text-sm leading-6 text-on-surface-variant">{item.description}</p>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    ) : null}
-                </section>
+                            ) : null}
+                        </section>
 
-                <main className="flex items-center justify-center px-5 py-8 sm:px-8 lg:px-12">
-                    <div className="w-full max-w-[560px]">{children}</div>
-                </main>
-            </div>
+                        <div className="flex items-center justify-center">
+                            <div className="w-full max-w-[560px]">{children}</div>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
     )
 }

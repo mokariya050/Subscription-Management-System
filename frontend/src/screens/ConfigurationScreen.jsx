@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import AppPage from '../components/AppPage'
+import AdminProtectedAppPage from '../components/AdminProtectedAppPage'
 import { useEffect } from 'react'
 import Card from '../components/ui/Card'
 
@@ -14,13 +14,13 @@ export default function ConfigurationScreen() {
     }
 
     if (!user) {
-      navigate('/login', { replace: true })
+      navigate('/internal/login', { replace: true })
     }
   }, [navigate, user, loading])
 
   const onLogout = async () => {
     await logout()
-    navigate('/login', { replace: true })
+    navigate('/internal/login', { replace: true })
   }
 
   // Show nothing while auth is loading
@@ -29,7 +29,7 @@ export default function ConfigurationScreen() {
   }
 
   return (
-    <AppPage
+    <AdminProtectedAppPage
       current="settings"
       onLogout={onLogout}
       title="Configuration"
@@ -38,13 +38,13 @@ export default function ConfigurationScreen() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {[
-          ['/configuration/recurring-plan', 'Recurring Plans', 'Manage subscription plans and billing cycles'],
-          ['/configuration/variant', 'Variants', 'Manage reusable variant groups for products'],
-          ['/configuration/attribute', 'Attributes', 'Configure product attributes and properties'],
-          ['/configuration/quotation-template', 'Quotation Templates', 'Manage quotation and proposal templates'],
-          ['/configuration/payment-term', 'Payment Terms', 'Define due dates and payment schedules'],
-          ['/configuration/discount', 'Discounts', 'Manage default discount definitions'],
-          ['/configuration/tax', 'Taxes', 'Configure tax rules and rates'],
+          ['/internal/configuration/recurring-plan', 'Recurring Plans', 'Manage subscription plans and billing cycles'],
+          ['/internal/configuration/variant', 'Variants', 'Manage reusable variant groups for products'],
+          ['/internal/configuration/attribute', 'Attributes', 'Configure product attributes and properties'],
+          ['/internal/configuration/quotation-template', 'Quotation Templates', 'Manage quotation and proposal templates'],
+          ['/internal/configuration/payment-term', 'Payment Terms', 'Define due dates and payment schedules'],
+          ['/internal/configuration/discount', 'Discounts', 'Manage default discount definitions'],
+          ['/internal/configuration/tax', 'Taxes', 'Configure tax rules and rates'],
         ].map(([to, title, description]) => (
           <Card
             key={to}
@@ -57,6 +57,6 @@ export default function ConfigurationScreen() {
           </Card>
         ))}
       </div>
-    </AppPage>
+    </AdminProtectedAppPage>
   )
 }

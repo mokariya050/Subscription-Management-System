@@ -8,7 +8,19 @@ import Input from '../components/ui/Input'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 
-export default function SignUpScreen() {
+export default function SignUpScreen({
+    audience = 'customer',
+    title,
+    description,
+    highlights,
+    appLabel,
+    heading,
+    subheading,
+    loginPath = '/login',
+    loginLabel = 'Sign in',
+    loginPrompt = 'Already have an account?',
+    postSignupPath = '/customer/home',
+}) {
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -59,7 +71,7 @@ export default function SignUpScreen() {
                 email: formData.email,
                 password: formData.password,
             })
-            navigate('/home', { replace: true })
+            navigate(postSignupPath, { replace: true })
         } catch (err) {
             setError(err.message || 'Sign up failed. Please try again.')
         } finally {
@@ -67,20 +79,50 @@ export default function SignUpScreen() {
         }
     }
 
+    if (audience === 'internal') {
+        return (
+            <AuthLayout
+                title={title || 'Internal access by invitation.'}
+                description={description || 'Internal accounts are provisioned by an administrator and are not self-registered.'}
+                highlights={highlights || [
+                    { title: 'Invitation only', description: 'Employees receive access from internal administrators.' },
+                    { title: 'Separated portals', description: 'Internal accounts stay isolated from customer sign-ups.' },
+                ]}
+            >
+                <Card className="mx-auto w-full max-w-[520px] p-6 sm:p-8 lg:p-10 text-center">
+                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">{appLabel || 'SubSync Internal'}</p>
+                    <h2 className="mt-3 font-serif text-3xl font-bold text-primary">{heading || 'Request internal access'}</h2>
+                    <p className="mt-2 text-sm leading-6 text-on-surface-variant">
+                        {subheading || 'If you are part of the internal team, ask an administrator to create your account.'}
+                    </p>
+
+                    <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                        <Link
+                            to={loginPath}
+                            className="inline-flex items-center justify-center rounded-full bg-surface-container-high px-5 py-3 font-semibold text-on-surface transition hover:bg-surface-container-highest sm:flex-1"
+                        >
+                            {loginLabel}
+                        </Link>
+                    </div>
+                </Card>
+            </AuthLayout>
+        )
+    }
+
     return (
         <AuthLayout
-            title="Master your subscriptions with editorial precision."
-            description="Create an account to manage customers, subscriptions, and billing with a clean workspace that stays approachable on every screen size."
-            highlights={[
+            title={title || 'Master your subscriptions with editorial precision.'}
+            description={description || 'Create a customer account to manage subscriptions and billing with a clean workspace that stays approachable on every screen size.'}
+            highlights={highlights || [
                 { title: 'Readable forms', description: 'Clear grouping, labels, and focus states reduce friction while entering data.' },
                 { title: 'Consistent spacing', description: 'Reusable components keep forms and dashboards visually aligned.' },
             ]}
         >
             <Card className="mx-auto w-full max-w-[520px] p-6 sm:p-8 lg:p-10">
                 <div className="mb-8">
-                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">SubSync</p>
-                    <h2 className="mt-3 font-serif text-3xl font-bold text-primary">Create account</h2>
-                    <p className="mt-2 text-sm leading-6 text-on-surface-variant">Start managing subscriptions today.</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">{appLabel || 'SubSync'}</p>
+                    <h2 className="mt-3 font-serif text-3xl font-bold text-primary">{heading || 'Create account'}</h2>
+                    <p className="mt-2 text-sm leading-6 text-on-surface-variant">{subheading || 'Start managing subscriptions today.'}</p>
                 </div>
 
                 {error ? <Alert variant="error" className="mb-6">{error}</Alert> : null}
@@ -174,9 +216,9 @@ export default function SignUpScreen() {
 
                 <footer className="mt-8 border-t border-surface-container pt-6 text-center">
                     <p className="text-sm text-on-surface-variant">
-                        Already have an account?{' '}
-                        <Link to="/login" className="font-semibold text-primary underline-offset-4 hover:underline">
-                            Sign in
+                        {loginPrompt}{' '}
+                        <Link to={loginPath} className="font-semibold text-primary underline-offset-4 hover:underline">
+                            {loginLabel}
                         </Link>
                     </p>
                 </footer>

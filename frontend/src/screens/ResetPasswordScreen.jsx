@@ -8,7 +8,17 @@ import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
 import Alert from '../components/ui/Alert'
 
-export default function ResetPasswordScreen() {
+export default function ResetPasswordScreen({
+  title,
+  description,
+  highlights,
+  appLabel,
+  heading,
+  subheading,
+  loginPath = '/login',
+  forgotPath = '/forgot-password',
+}) {
+
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const otpInputRefs = useRef([])
@@ -168,7 +178,7 @@ export default function ResetPasswordScreen() {
 
       setSuccessMessage('Password reset successful. Redirecting to sign in...')
       setTimeout(() => {
-        navigate('/login', { replace: true })
+        navigate(loginPath, { replace: true })
       }, 1200)
     } catch (err) {
       setError(err.message || 'Unable to reset password. Please verify your OTP and try again.')
@@ -179,19 +189,19 @@ export default function ResetPasswordScreen() {
 
   return (
     <AuthLayout
-      title="Securely set a new password."
-      description="Verify your one-time passcode first, then set a new password."
-      highlights={[
+      title={title || 'Securely set a new password.'}
+      description={description || 'Verify your one-time passcode first, then set a new password.'}
+      highlights={highlights || [
         { title: 'Fast verification', description: 'A segmented 6-digit OTP input supports paste and quick auto-checks.' },
         { title: 'Secure handoff', description: 'Password reset is enabled only after OTP verification succeeds.' },
       ]}
     >
       <Card className="mx-auto w-full max-w-[460px] p-6 sm:p-8 lg:p-10">
         <div className="mb-8 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">Reset password</p>
-          <h2 className="mt-3 font-serif text-3xl font-bold text-primary">Verify OTP</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">{appLabel || 'Reset password'}</p>
+          <h2 className="mt-3 font-serif text-3xl font-bold text-primary">{heading || 'Verify OTP'}</h2>
           <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-            {otpVerified ? 'OTP verified. Set your new password below.' : 'Enter the 6-digit code sent to your email.'}
+            {subheading || (otpVerified ? 'OTP verified. Set your new password below.' : 'Enter the 6-digit code sent to your email.')}
           </p>
         </div>
 
@@ -288,11 +298,11 @@ export default function ResetPasswordScreen() {
         <div className="mt-8 border-t border-surface-container pt-6 text-center">
           <p className="mb-2 text-sm text-on-surface-variant">
             Need a new OTP?{' '}
-            <Link className="font-semibold text-primary underline-offset-4 hover:underline" to="/forgot-password">
+            <Link className="font-semibold text-primary underline-offset-4 hover:underline" to={forgotPath}>
               Request again
             </Link>
           </p>
-          <Link className="text-sm font-semibold text-primary underline-offset-4 hover:underline" to="/login">
+          <Link className="text-sm font-semibold text-primary underline-offset-4 hover:underline" to={loginPath}>
             Back to sign in
           </Link>
         </div>

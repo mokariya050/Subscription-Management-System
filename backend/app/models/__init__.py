@@ -148,6 +148,20 @@ class Product(db.Model):
     
     # Relationships
     plans = db.relationship('Plan', backref='product', lazy='dynamic', cascade='all, delete-orphan')
+    images = db.relationship('ProductImage', backref='product', lazy='dynamic', cascade='all, delete-orphan')
+
+
+class ProductImage(db.Model):
+    """Photos attached to products"""
+    __tablename__ = 'product_images'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    product_id = db.Column(db.BigInteger, db.ForeignKey('products.id', ondelete='CASCADE'), nullable=False, index=True)
+    image_url = db.Column(db.String(500), nullable=False)
+    sort_order = db.Column(db.Integer, default=0)
+    is_primary = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class Plan(db.Model):

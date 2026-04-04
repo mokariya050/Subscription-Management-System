@@ -31,7 +31,7 @@ export default function ProductsScreen() {
         }
 
         if (!user) {
-            navigate('/login', { replace: true })
+            navigate('/internal/login', { replace: true })
             return
         }
 
@@ -52,7 +52,7 @@ export default function ProductsScreen() {
 
     const onLogout = async () => {
         await logout()
-        navigate('/login', { replace: true })
+        navigate('/internal/login', { replace: true })
     }
 
     return (
@@ -63,7 +63,7 @@ export default function ProductsScreen() {
             subtitle="Live data from backend API"
             actions={
                 <Link
-                    to="/products/new"
+                    to="/internal/products/new"
                     className="inline-flex items-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                     New product
@@ -91,14 +91,14 @@ export default function ProductsScreen() {
                     title="No products found"
                     description="Add a product to start building catalog entries and subscription plans."
                     actionLabel="Create product"
-                    onAction={() => navigate('/products/new')}
+                    onAction={() => navigate('/internal/products/new')}
                 />
             ) : (
                 <DataTable
                     caption="Product list"
                     rows={products}
                     getRowKey={(product) => product.id}
-                    onRowClick={(product) => navigate(`/products/detail?id=${product.id}`)}
+                    onRowClick={(product) => navigate(`/internal/products/detail?id=${product.id}`)}
                     emptyMessage="No products available."
                     columns={[
                         { key: 'name', label: 'Name', render: (product) => <span className="font-semibold text-primary">{product.name}</span> },

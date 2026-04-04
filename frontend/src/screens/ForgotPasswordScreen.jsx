@@ -8,7 +8,16 @@ import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
 import Alert from '../components/ui/Alert'
 
-export default function ForgotPasswordScreen() {
+export default function ForgotPasswordScreen({
+    title,
+    description,
+    highlights,
+    appLabel,
+    heading,
+    subheading,
+    loginPath = '/login',
+    resetPath = '/reset-password',
+}) {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
@@ -35,18 +44,18 @@ export default function ForgotPasswordScreen() {
 
     return (
         <AuthLayout
-            title="Recover access quickly and securely."
-            description="Request a one-time passcode, then set a new password in a guided flow."
-            highlights={[
+            title={title || 'Recover access quickly and securely.'}
+            description={description || 'Request a one-time passcode, then set a new password in a guided flow.'}
+            highlights={highlights || [
                 { title: 'Time-bound OTP', description: 'Each OTP expires quickly and can only be used once.' },
                 { title: 'Clear steps', description: 'Request code, verify code, and set a new password.' },
             ]}
         >
             <Card className="mx-auto w-full max-w-[460px] p-6 sm:p-8 lg:p-10">
                 <div className="mb-8 text-center">
-                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">Forgot password</p>
-                    <h2 className="mt-3 font-serif text-3xl font-bold text-primary">Request OTP</h2>
-                    <p className="mt-2 text-sm leading-6 text-on-surface-variant">Enter your account email to receive a one-time code.</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">{appLabel || 'Forgot password'}</p>
+                    <h2 className="mt-3 font-serif text-3xl font-bold text-primary">{heading || 'Request OTP'}</h2>
+                    <p className="mt-2 text-sm leading-6 text-on-surface-variant">{subheading || 'Enter your account email to receive a one-time code.'}</p>
                 </div>
 
                 {error ? <Alert variant="error" className="mb-6">{error}</Alert> : null}
@@ -77,7 +86,7 @@ export default function ForgotPasswordScreen() {
 
                     {successMessage ? (
                         <Link
-                            to={`/reset-password?email=${encodeURIComponent(email)}`}
+                            to={`${resetPath}?email=${encodeURIComponent(email)}`}
                             className="block w-full rounded-2xl border border-outline-variant bg-white px-4 py-3 text-center text-sm font-semibold text-primary transition hover:border-primary"
                         >
                             Continue to reset password
@@ -86,7 +95,7 @@ export default function ForgotPasswordScreen() {
                 </form>
 
                 <div className="mt-8 border-t border-surface-container pt-6 text-center">
-                    <Link className="text-sm font-semibold text-primary underline-offset-4 hover:underline" to="/login">
+                    <Link className="text-sm font-semibold text-primary underline-offset-4 hover:underline" to={loginPath}>
                         Back to sign in
                     </Link>
                 </div>

@@ -10,6 +10,7 @@ from app.routes.configuration import (
 )
 from app.routes.invoices import invoices_bp, payments_bp
 from app.routes.products import plans_bp, products_bp
+from app.routes.store import store_bp
 from app.routes.subscriptions import subscriptions_bp
 from app.routes.users import users_bp
 
@@ -19,6 +20,7 @@ APP_BLUEPRINTS = (
     users_bp,
     products_bp,
     plans_bp,
+    store_bp,
     subscriptions_bp,
     invoices_bp,
     payments_bp,

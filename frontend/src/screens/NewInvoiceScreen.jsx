@@ -104,7 +104,7 @@ export default function NewInvoiceScreen() {
                 return
             }
 
-            navigate(`/invoice/new/payment?invoiceId=${createdId}`, { replace: true })
+            navigate(`/internal/invoice/new/payment?invoiceId=${createdId}`, { replace: true })
         } catch (err) {
             setError(err.message || 'Failed to create invoice draft')
         } finally {

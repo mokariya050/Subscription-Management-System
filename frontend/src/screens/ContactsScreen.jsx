@@ -173,7 +173,7 @@ export default function ContactsScreen() {
                                         </div>
                                         <button
                                             type="button"
-                                            onClick={() => navigate(`/users/detail?id=${selectedContact.id}`)}
+                                            onClick={() => navigate(`/internal/users/detail?id=${selectedContact.id}`)}
                                             className="rounded-xl border border-outline-variant bg-white px-4 py-2 text-sm font-semibold"
                                         >
                                             Open User Profile

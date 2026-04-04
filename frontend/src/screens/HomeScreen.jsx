@@ -34,7 +34,7 @@ export default function HomeScreen() {
         }
 
         if (!user) {
-            navigate('/login', { replace: true })
+            navigate('/internal/login', { replace: true })
             return
         }
 
@@ -55,7 +55,7 @@ export default function HomeScreen() {
 
     const onLogout = async () => {
         await logout()
-        navigate('/login', { replace: true })
+        navigate('/internal/login', { replace: true })
     }
 
     return (
@@ -66,7 +66,7 @@ export default function HomeScreen() {
             subtitle="Live data from backend API"
             actions={
                 <Link
-                    to="/subscription/other-info"
+                    to="/internal/subscription/other-info"
                     className="inline-flex items-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                     New subscription
@@ -94,14 +94,14 @@ export default function HomeScreen() {
                     title="No subscriptions yet"
                     description="Create a subscription to see activity, status, and invoices appear here."
                     actionLabel="Create subscription"
-                    onAction={() => navigate('/subscription/other-info')}
+                    onAction={() => navigate('/internal/subscription/other-info')}
                 />
             ) : (
                 <DataTable
                     caption="Subscription list"
                     rows={subscriptions}
                     getRowKey={(sub) => sub.id}
-                    onRowClick={(sub) => navigate(`/subscription/detail?id=${sub.id}`)}
+                    onRowClick={(sub) => navigate(`/internal/subscription/detail?id=${sub.id}`)}
                     emptyMessage="No subscriptions available."
                     columns={[
                         { key: 'id', label: 'ID', render: (sub) => <span className="font-semibold text-primary">#{sub.id}</span> },
