@@ -7,6 +7,12 @@ import SplashLoadingBaseScreen from './screens/SplashLoadingScreen'
 import SplashSuccessBaseScreen from './screens/SplashSuccessScreen'
 import SplashErrorScreen from './screens/SplashErrorScreen'
 import HomeScreen from './screens/HomeScreen'
+import SubscriptionOtherInfoScreen from './screens/SubscriptionOtherInfoScreen'
+import QuotationSentScreen from './screens/QuotationSentScreen'
+import DraftInvoiceScreen from './screens/DraftInvoiceScreen'
+import NewInvoiceScreen from './screens/NewInvoiceScreen'
+import NewInvoicePaymentScreen from './screens/NewInvoicePaymentScreen'
+import SubscriptionDetailScreen from './screens/SubscriptionDetailScreen'
 
 function SplashLoadingScreen() {
     const navigate = useNavigate()
@@ -47,6 +53,12 @@ export default function App() {
             <Route path="/signup" element={<SignUpScreen />} />
             <Route path="/reset-password" element={<ResetPasswordScreen />} />
             <Route path="/home" element={<HomeScreen />} />
+            <Route path="/subscription/other-info" element={<SubscriptionOtherInfoScreen />} />
+            <Route path="/quotation-sent" element={<QuotationSentScreen />} />
+            <Route path="/draft-invoice" element={<DraftInvoiceScreen />} />
+            <Route path="/invoice/new" element={<NewInvoiceScreen />} />
+            <Route path="/invoice/new/payment" element={<NewInvoicePaymentScreen />} />
+            <Route path="/subscription/detail" element={<SubscriptionDetailScreen />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
     )
