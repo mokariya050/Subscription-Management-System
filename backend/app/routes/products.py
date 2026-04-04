@@ -3,7 +3,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Product, Plan, PlanFeature, User, db
 from app.schemas import ProductSchema, PlanSchema, PlanFeatureSchema
-from app.utils import success_response, error_response, admin_required, create_audit_log
+from app.utils import success_response, error_response, admin_required, create_audit_log, is_json_request
 
 products_bp = Blueprint('products', __name__, url_prefix='/api/products')
 plans_bp = Blueprint('plans', __name__, url_prefix='/api/plans')
@@ -44,7 +44,7 @@ def create_product():
     current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -93,7 +93,7 @@ def update_product(product_id):
     if not product:
         return error_response('Product not found', 404)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -164,7 +164,7 @@ def create_plan():
     current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -226,7 +226,7 @@ def update_plan(plan_id):
     if not plan:
         return error_response('Plan not found', 404)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -256,6 +256,38 @@ def update_plan(plan_id):
     except Exception as e:
         db.session.rollback()
         return error_response(f'Update failed: {str(e)}', 400)
+
+
+@plans_bp.route('/<int:plan_id>', methods=['DELETE'])
+@admin_required
+def delete_plan(plan_id):
+    """Delete plan (admin only)"""
+    current_user_id = int(get_jwt_identity())
+    current_user = User.query.get(current_user_id)
+
+    plan = Plan.query.get(plan_id)
+    if not plan:
+        return error_response('Plan not found', 404)
+
+    try:
+        old_value = PlanSchema().dump(plan)
+
+        db.session.delete(plan)
+        db.session.commit()
+
+        create_audit_log(
+            current_user_id,
+            current_user.account_id,
+            'plan_deleted',
+            'plans',
+            plan_id,
+            old_value=old_value,
+        )
+
+        return success_response(None, 'Plan deleted')
+    except Exception as e:
+        db.session.rollback()
+        return error_response(f'Delete failed: {str(e)}', 400)
 
 
 @plans_bp.route('/<int:plan_id>/features', methods=['GET'])

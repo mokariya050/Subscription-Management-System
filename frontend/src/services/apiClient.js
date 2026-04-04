@@ -1,15 +1,101 @@
 // API Client for backend communication
+import { encryptData, decryptData } from './encryption'
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000/api'
+
+// Track token refresh in progress to avoid race conditions
+let tokenRefreshPromise = null
 
 // Helper to get auth token
 const getAuthToken = () => localStorage.getItem('access_token')
 
+// Check if endpoint should use encryption
+const shouldEncrypt = (endpoint) => {
+    // Encrypt sensitive auth payloads too; keep logout plain because it has no body.
+    if (endpoint.includes('/auth/logout')) return false
+    return true
+}
+
+// Helper to refresh the access token
+const refreshAccessToken = async () => {
+    // If a refresh is already in progress, wait for it
+    if (tokenRefreshPromise) {
+        return tokenRefreshPromise
+    }
+
+    tokenRefreshPromise = (async () => {
+        try {
+            const refreshToken = localStorage.getItem('refresh_token')
+            if (!refreshToken) {
+                throw new Error('No refresh token available')
+            }
+
+            const url = `${API_BASE_URL}/auth/refresh`
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${refreshToken}`,
+                },
+                body: JSON.stringify({ refresh_token: refreshToken }),
+            })
+
+            let data = null
+            try {
+                data = await response.json()
+            } catch {
+                data = null
+            }
+
+            if (!response.ok) {
+                throw new Error('Token refresh failed')
+            }
+
+            // Store new access token and update expiration
+            localStorage.setItem('access_token', data.data.access_token)
+            localStorage.setItem('token_expires_at', Date.now() + (59 * 60 * 1000)) // 59 minutes from now
+
+            return data.data.access_token
+        } catch (error) {
+            // If refresh fails, clear auth data
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('refresh_token')
+            localStorage.removeItem('user')
+            localStorage.removeItem('token_expires_at')
+            throw error
+        } finally {
+            tokenRefreshPromise = null
+        }
+    })()
+
+    return tokenRefreshPromise
+}
+
 // Helper to make API requests
 const apiRequest = async (endpoint, options = {}) => {
     const url = `${API_BASE_URL}${endpoint}`
-    const headers = {
+    let body = options.body
+    let headers = {
         'Content-Type': 'application/json',
         ...options.headers,
+    }
+
+    // Encrypt request body if applicable
+    const useEncryption = shouldEncrypt(endpoint) && options.method && ['POST', 'PUT', 'PATCH'].includes(options.method)
+    if (useEncryption && body) {
+        try {
+            const bodyData = typeof body === 'string' ? JSON.parse(body) : body
+            const encryptedBody = await encryptData(bodyData)
+            body = encryptedBody
+            headers['X-Encrypted'] = 'true'
+        } catch (error) {
+            console.error('Failed to encrypt request:', error)
+            throw {
+                status: 0,
+                message: 'Request encryption failed. Request was blocked for security.',
+                data: null,
+            }
+        }
     }
 
     // Add auth token if exists
@@ -23,6 +109,7 @@ const apiRequest = async (endpoint, options = {}) => {
         response = await fetch(url, {
             ...options,
             headers,
+            body,
         })
     } catch {
         throw {
@@ -34,16 +121,98 @@ const apiRequest = async (endpoint, options = {}) => {
 
     let data = null
     try {
-        data = await response.json()
+        const responseText = await response.text()
+        // Try to decrypt if response is encrypted
+        if (response.headers.get('X-Encrypted') === 'true') {
+            try {
+                data = decryptData(responseText)
+            } catch {
+                data = JSON.parse(responseText)
+            }
+        } else {
+            data = JSON.parse(responseText)
+        }
     } catch {
         data = null
     }
 
     if (!response.ok) {
+        if (response.status === 401 && options.method !== 'POST' && !endpoint.includes('/auth/')) {
+            // Token might be expired, attempt to refresh
+            try {
+                const newToken = await refreshAccessToken()
+                // Retry the original request with the new token
+                let retryBody = options.body
+                let retryHeaders = {
+                    'Content-Type': 'application/json',
+                    ...options.headers,
+                    'Authorization': `Bearer ${newToken}`,
+                }
+
+                // Re-encrypt if needed
+                const retryUseEncryption = shouldEncrypt(endpoint) && options.method && ['POST', 'PUT', 'PATCH'].includes(options.method)
+                if (retryUseEncryption && retryBody) {
+                    try {
+                        const bodyData = typeof retryBody === 'string' ? JSON.parse(retryBody) : retryBody
+                        retryBody = await encryptData(bodyData)
+                        retryHeaders['X-Encrypted'] = 'true'
+                    } catch (error) {
+                        console.error('Failed to encrypt retry request:', error)
+                        throw {
+                            status: 0,
+                            message: 'Retry request encryption failed. Request was blocked for security.',
+                            data: null,
+                        }
+                    }
+                }
+
+                const retryResponse = await fetch(url, {
+                    ...options,
+                    headers: retryHeaders,
+                    body: retryBody,
+                })
+
+                let retryData = null
+                try {
+                    const retryResponseText = await retryResponse.text()
+                    if (retryResponse.headers.get('X-Encrypted') === 'true') {
+                        try {
+                            retryData = decryptData(retryResponseText)
+                        } catch {
+                            retryData = JSON.parse(retryResponseText)
+                        }
+                    } else {
+                        retryData = JSON.parse(retryResponseText)
+                    }
+                } catch {
+                    retryData = null
+                }
+
+                if (retryResponse.ok) {
+                    return retryData
+                }
+
+                // If retry fails, return the error
+                throw {
+                    status: retryResponse.status,
+                    message: retryData?.message || retryData?.error || 'API Error',
+                    data: retryData,
+                }
+            } catch (refreshError) {
+                // Refresh failed, clear session and throw error
+                throw {
+                    status: 401,
+                    message: 'Session expired. Please login again.',
+                    data: null,
+                }
+            }
+        }
+
         if (response.status === 401) {
             localStorage.removeItem('access_token')
             localStorage.removeItem('refresh_token')
             localStorage.removeItem('user')
+            localStorage.removeItem('token_expires_at')
         }
         throw {
             status: response.status,
@@ -128,6 +297,42 @@ export const authAPI = {
             localStorage.removeItem('user')
         }
     },
+
+    /**
+     * Request OTP for password recovery
+     * @param {string} email
+     */
+    forgotPassword: async (email) => {
+        const response = await apiRequest('/auth/forgot-password', {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+        })
+        return response.data || {}
+    },
+
+    /**
+     * Verify OTP before allowing password reset
+     * @param {Object} payload - { email, otp }
+     */
+    verifyResetOtp: async (payload) => {
+        const response = await apiRequest('/auth/verify-reset-otp', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        })
+        return response.data || {}
+    },
+
+    /**
+     * Reset password using OTP
+     * @param {Object} payload - { email, otp, new_password }
+     */
+    resetPasswordWithOtp: async (payload) => {
+        const response = await apiRequest('/auth/reset-password', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        })
+        return response.data || {}
+    },
 }
 
 // ==================== USER ENDPOINTS ====================
@@ -205,6 +410,34 @@ export const usersAPI = {
         return apiRequest(`/users/${userId}/roles`, {
             method: 'POST',
             body: JSON.stringify({ role }),
+        })
+    },
+
+    /**
+     * Create a new user
+     */
+    create: async (userData) => {
+        return apiRequest('/users', {
+            method: 'POST',
+            body: JSON.stringify(userData),
+        })
+    },
+
+    /**
+     * Deactivate (soft delete) a user
+     */
+    deactivateUser: async (userId) => {
+        return apiRequest(`/users/${userId}/deactivate`, {
+            method: 'POST',
+        })
+    },
+
+    /**
+     * Remove role from user
+     */
+    removeRole: async (roleId) => {
+        return apiRequest(`/users/roles/${roleId}`, {
+            method: 'DELETE',
         })
     },
 }
@@ -327,6 +560,13 @@ export const subscriptionsAPI = {
      */
     getById: async (subscriptionId) => {
         return apiRequest(`/subscriptions/${subscriptionId}`, { method: 'GET' })
+    },
+
+    /**
+     * Get invoices for subscription
+     */
+    getInvoices: async (subscriptionId) => {
+        return apiRequest(`/subscriptions/${subscriptionId}/invoices`, { method: 'GET' })
     },
 
     /**
@@ -464,10 +704,120 @@ export const invoicesAPI = {
     },
 }
 
+// ==================== CONFIGURATION ENDPOINTS ====================
+
+export const configurationAPI = {
+    getAttributes: async () => {
+        return apiRequest('/attributes', { method: 'GET' })
+    },
+
+    createAttribute: async (payload) => {
+        return apiRequest('/attributes', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        })
+    },
+
+    updateAttribute: async (attributeId, payload) => {
+        return apiRequest(`/attributes/${attributeId}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+        })
+    },
+
+    getAttributeValues: async (attributeId) => {
+        return apiRequest(`/attributes/${attributeId}/values`, { method: 'GET' })
+    },
+
+    createAttributeValue: async (attributeId, payload) => {
+        return apiRequest(`/attributes/${attributeId}/values`, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        })
+    },
+
+    deleteAttributeValue: async (valueId) => {
+        return apiRequest(`/attributes/values/${valueId}`, { method: 'DELETE' })
+    },
+
+    getQuotationTemplates: async () => {
+        return apiRequest('/quotation-templates', { method: 'GET' })
+    },
+
+    createQuotationTemplate: async (payload) => {
+        return apiRequest('/quotation-templates', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        })
+    },
+
+    updateQuotationTemplate: async (templateId, payload) => {
+        return apiRequest(`/quotation-templates/${templateId}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+        })
+    },
+
+    getDiscounts: async () => {
+        return apiRequest('/discounts', { method: 'GET' })
+    },
+
+    createDiscount: async (payload) => {
+        return apiRequest('/discounts', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        })
+    },
+
+    updateDiscount: async (discountId, payload) => {
+        return apiRequest(`/discounts/${discountId}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+        })
+    },
+
+    getTaxes: async () => {
+        return apiRequest('/taxes', { method: 'GET' })
+    },
+
+    createTax: async (payload) => {
+        return apiRequest('/taxes', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        })
+    },
+
+    updateTax: async (taxId, payload) => {
+        return apiRequest(`/taxes/${taxId}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+        })
+    },
+
+    getPaymentTerms: async () => {
+        return apiRequest('/payment-terms', { method: 'GET' })
+    },
+
+    createPaymentTerm: async (payload) => {
+        return apiRequest('/payment-terms', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        })
+    },
+
+    updatePaymentTerm: async (paymentTermId, payload) => {
+        return apiRequest(`/payment-terms/${paymentTermId}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+        })
+    },
+}
+
 export default {
     authAPI,
     usersAPI,
     productsAPI,
     subscriptionsAPI,
     invoicesAPI,
+    configurationAPI,
 }

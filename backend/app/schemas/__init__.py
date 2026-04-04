@@ -2,7 +2,8 @@ from marshmallow import Schema, fields, validate, ValidationError, pre_load
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, SQLAlchemySchema, auto_field
 from app.models import (
     Account, User, UserRole, Address, PaymentMethod, Product, Plan,
-    PlanFeature, Subscription, Invoice, InvoiceItem, Payment, AuditLog
+    PlanFeature, Subscription, Invoice, InvoiceItem, Payment, AuditLog,
+    Attribute, AttributeValue, QuotationTemplate, Discount, Tax, PaymentTerm
 )
 
 
@@ -131,6 +132,95 @@ class PlanFeatureSchema(SQLAlchemyAutoSchema):
     plan_id = fields.Int(required=True)
     feature_name = fields.Str(required=True)
     feature_value = fields.Str()
+
+
+class AttributeValueSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = AttributeValue
+        load_instance = True
+
+    id = fields.Int(dump_only=True)
+    attribute_id = fields.Int(required=True)
+    value = fields.Str(required=True)
+    extra_price_cents = fields.Int(dump_default=0)
+    is_active = fields.Bool()
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+
+
+class AttributeSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Attribute
+        load_instance = True
+
+    id = fields.Int(dump_only=True)
+    name = fields.Str(required=True, validate=validate.Length(min=1, max=120))
+    is_active = fields.Bool()
+    values = fields.Nested(AttributeValueSchema, many=True, dump_only=True)
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+
+
+class QuotationTemplateSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = QuotationTemplate
+        load_instance = True
+
+    id = fields.Int(dump_only=True)
+    name = fields.Str(required=True, validate=validate.Length(min=1, max=120))
+    recurring_plan_id = fields.Int(allow_none=True)
+    valid_for_days = fields.Int(dump_default=30)
+    header = fields.Str(allow_none=True)
+    footer = fields.Str(allow_none=True)
+    notes = fields.Str(allow_none=True)
+    is_active = fields.Bool()
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+
+
+class DiscountSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Discount
+        load_instance = True
+
+    id = fields.Int(dump_only=True)
+    name = fields.Str(required=True, validate=validate.Length(min=1, max=120))
+    value_type = fields.Str(required=True, validate=validate.OneOf(['percentage', 'fixed']))
+    value = fields.Float(required=True)
+    recurring_plan_id = fields.Int(allow_none=True)
+    notes = fields.Str(allow_none=True)
+    is_active = fields.Bool()
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+
+
+class TaxSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Tax
+        load_instance = True
+
+    id = fields.Int(dump_only=True)
+    name = fields.Str(required=True, validate=validate.Length(min=1, max=120))
+    value_type = fields.Str(required=True, validate=validate.OneOf(['percentage', 'fixed']))
+    value = fields.Float(required=True)
+    is_active = fields.Bool()
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+
+
+class PaymentTermSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = PaymentTerm
+        load_instance = True
+
+    id = fields.Int(dump_only=True)
+    name = fields.Str(required=True, validate=validate.Length(min=1, max=120))
+    early_discount_type = fields.Str(required=True, validate=validate.OneOf(['percent', 'fixed']))
+    early_discount_value = fields.Float(required=True)
+    due_after_days = fields.Int(required=True)
+    is_active = fields.Bool()
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
 
 
 # Plan Schema

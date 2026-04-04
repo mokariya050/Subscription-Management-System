@@ -63,6 +63,7 @@ class User(db.Model):
     invoices = db.relationship('Invoice', backref='user', lazy='dynamic')
     payments = db.relationship('Payment', backref='user', lazy='dynamic')
     audit_logs = db.relationship('AuditLog', backref='user', lazy='dynamic')
+    password_reset_otps = db.relationship('PasswordResetOtp', backref='user', lazy='dynamic', cascade='all, delete-orphan')
 
 
 class UserRole(db.Model):
@@ -77,6 +78,19 @@ class UserRole(db.Model):
 
     user = db.relationship('User', foreign_keys=[user_id], back_populates='roles')
     granted_by_user = db.relationship('User', foreign_keys=[granted_by_user_id])
+
+
+class PasswordResetOtp(db.Model):
+    """One-time password records for password recovery."""
+    __tablename__ = 'password_reset_otps'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    otp_hash = db.Column(db.String(255), nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False, index=True)
+    attempts = db.Column(db.Integer, default=0)
+    used_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
 
 
 class Address(db.Model):
@@ -166,6 +180,94 @@ class PlanFeature(db.Model):
     plan_id = db.Column(db.BigInteger, db.ForeignKey('plans.id', ondelete='CASCADE'), nullable=False)
     feature_name = db.Column(db.String(100), nullable=False)
     feature_value = db.Column(db.String(255))
+
+
+class Attribute(db.Model):
+    """Configurable product attributes"""
+    __tablename__ = 'attributes'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String(120), nullable=False, unique=True)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    values = db.relationship('AttributeValue', backref='attribute', lazy='dynamic', cascade='all, delete-orphan')
+
+
+class AttributeValue(db.Model):
+    """Values for an attribute with optional extra price"""
+    __tablename__ = 'attribute_values'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    attribute_id = db.Column(db.BigInteger, db.ForeignKey('attributes.id', ondelete='CASCADE'), nullable=False)
+    value = db.Column(db.String(120), nullable=False)
+    extra_price_cents = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class QuotationTemplate(db.Model):
+    """Reusable quotation templates"""
+    __tablename__ = 'quotation_templates'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    recurring_plan_id = db.Column(db.BigInteger, db.ForeignKey('plans.id'), nullable=True)
+    valid_for_days = db.Column(db.Integer, default=30)
+    header = db.Column(db.String(255), nullable=True)
+    footer = db.Column(db.String(255), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    recurring_plan = db.relationship('Plan')
+
+
+class Discount(db.Model):
+    """Discount rules configured by admins"""
+    __tablename__ = 'discounts'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    value_type = db.Column(db.String(20), nullable=False, default='percentage')  # percentage, fixed
+    value = db.Column(db.Float, nullable=False, default=0)
+    recurring_plan_id = db.Column(db.BigInteger, db.ForeignKey('plans.id'), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    recurring_plan = db.relationship('Plan')
+
+
+class Tax(db.Model):
+    """Tax configuration"""
+    __tablename__ = 'taxes'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    value_type = db.Column(db.String(20), nullable=False, default='percentage')  # percentage, fixed
+    value = db.Column(db.Float, nullable=False, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class PaymentTerm(db.Model):
+    """Payment term configuration for subscriptions and invoices"""
+    __tablename__ = 'payment_terms'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    early_discount_type = db.Column(db.String(20), nullable=False, default='percent')  # percent, fixed
+    early_discount_value = db.Column(db.Float, nullable=False, default=0)
+    due_after_days = db.Column(db.Integer, nullable=False, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class Subscription(db.Model):

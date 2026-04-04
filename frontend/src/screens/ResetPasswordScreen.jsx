@@ -1,105 +1,302 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { authAPI } from '../services/apiClient'
+import AuthLayout from '../components/layout/AuthLayout'
+import Card from '../components/ui/Card'
+import Field from '../components/ui/Field'
+import Input from '../components/ui/Input'
+import Button from '../components/ui/Button'
+import Alert from '../components/ui/Alert'
 
 export default function ResetPasswordScreen() {
-  const [emailSent, setEmailSent] = useState(false)
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const otpInputRefs = useRef([])
   const [email, setEmail] = useState('')
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', ''])
+  const [otpVerified, setOtpVerified] = useState(false)
+  const [verifyingOtp, setVerifyingOtp] = useState(false)
+  const [lastAutoVerifiedOtp, setLastAutoVerifiedOtp] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setEmailSent(true)
+  const otpValue = useMemo(() => otpDigits.join(''), [otpDigits])
+
+  useEffect(() => {
+    const seededEmail = searchParams.get('email') || ''
+    if (seededEmail) {
+      setEmail(seededEmail)
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    if (otpVerified || verifyingOtp || otpValue.length !== 6) {
+      return
+    }
+
+    if (!email || otpValue === lastAutoVerifiedOtp) {
+      return
+    }
+
+    const autoVerify = async () => {
+      setVerifyingOtp(true)
+      setError('')
+      try {
+        await authAPI.verifyResetOtp({ email, otp: otpValue })
+        setOtpVerified(true)
+        setSuccessMessage('OTP verified. You can now set a new password.')
+      } catch (err) {
+        setError(err.message || 'Invalid OTP. Please try again.')
+      } finally {
+        setLastAutoVerifiedOtp(otpValue)
+        setVerifyingOtp(false)
+      }
+    }
+
+    autoVerify()
+  }, [email, lastAutoVerifiedOtp, otpValue, otpVerified, verifyingOtp])
+
+  const handleVerifyOtp = async (event) => {
+    event?.preventDefault()
+    if (!email || otpValue.length !== 6 || otpVerified) {
+      return
+    }
+
+    setError('')
+    setSuccessMessage('')
+    setVerifyingOtp(true)
+    try {
+      await authAPI.verifyResetOtp({ email, otp: otpValue })
+      setOtpVerified(true)
+      setSuccessMessage('OTP verified. You can now set a new password.')
+    } catch (err) {
+      setError(err.message || 'Invalid OTP. Please try again.')
+    } finally {
+      setVerifyingOtp(false)
+    }
+  }
+
+  const handleOtpChange = (index, nextValue) => {
+    const digit = nextValue.replace(/\D/g, '').slice(-1)
+    const nextDigits = [...otpDigits]
+    nextDigits[index] = digit
+
+    setOtpDigits(nextDigits)
+    setOtpVerified(false)
+    setSuccessMessage('')
+
+    if (digit && index < otpInputRefs.current.length - 1) {
+      otpInputRefs.current[index + 1]?.focus()
+    }
+  }
+
+  const handleOtpKeyDown = (index, event) => {
+    if (event.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      event.preventDefault()
+      const nextDigits = [...otpDigits]
+      nextDigits[index - 1] = ''
+      setOtpDigits(nextDigits)
+      otpInputRefs.current[index - 1]?.focus()
+      setOtpVerified(false)
+      setSuccessMessage('')
+      return
+    }
+
+    if (event.key === 'ArrowLeft' && index > 0) {
+      event.preventDefault()
+      otpInputRefs.current[index - 1]?.focus()
+      return
+    }
+
+    if (event.key === 'ArrowRight' && index < otpInputRefs.current.length - 1) {
+      event.preventDefault()
+      otpInputRefs.current[index + 1]?.focus()
+    }
+  }
+
+  const handleOtpPaste = (event) => {
+    event.preventDefault()
+    const pasted = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
+    if (!pasted) {
+      return
+    }
+
+    const nextDigits = ['', '', '', '', '', '']
+    pasted.split('').forEach((char, index) => {
+      nextDigits[index] = char
+    })
+    setOtpDigits(nextDigits)
+    setOtpVerified(false)
+    setSuccessMessage('')
+
+    const focusIndex = Math.min(pasted.length, 6) - 1
+    if (focusIndex >= 0) {
+      otpInputRefs.current[focusIndex]?.focus()
+    }
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setError('')
+    setSuccessMessage('')
+
+    if (!otpVerified) {
+      setError('Please verify OTP before resetting your password.')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match.')
+      return
+    }
+
+    if (newPassword.length < 8) {
+      setError('New password must be at least 8 characters.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      await authAPI.resetPasswordWithOtp({
+        email,
+        otp: otpValue,
+        new_password: newPassword,
+      })
+
+      setSuccessMessage('Password reset successful. Redirecting to sign in...')
+      setTimeout(() => {
+        navigate('/login', { replace: true })
+      }, 1200)
+    } catch (err) {
+      setError(err.message || 'Unable to reset password. Please verify your OTP and try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="bg-surface-container-low min-h-screen flex items-center justify-center font-body text-on-surface">
-      <main className="flex flex-col md:flex-row w-full min-h-screen relative">
-        {/* Left Section: Geometric Pattern */}
-        <section className="hidden md:flex md:w-1/2 bg-surface items-center justify-center relative overflow-hidden p-12">
-          <svg className="absolute inset-0 w-full h-full opacity-[0.08]" preserveAspectRatio="none" viewBox="0 0 100 100">
-            <line stroke="#031839" strokeWidth="0.1" x1="10" x2="90" y1="0" y2="100"></line>
-            <line stroke="#031839" strokeWidth="0.1" x1="0" x2="100" y1="20" y2="80"></line>
-            <line stroke="#031839" strokeWidth="0.1" x1="30" x2="30" y1="0" y2="100"></line>
-            <circle cx="70" cy="30" fill="none" r="15" stroke="#031839" strokeWidth="0.1"></circle>
-            <rect fill="none" height="20" stroke="#031839" strokeWidth="0.1" width="40" x="10" y="60"></rect>
-          </svg>
-          <div className="relative z-10 max-w-lg">
-            <span className="text-xs uppercase tracking-widest font-label font-extrabold text-primary mb-4 block">SubSync Ledger</span>
-            <h2 className="text-5xl font-serif text-primary leading-tight mb-6 italic">Financial clarity through intentional design.</h2>
-            <p className="text-on-surface-variant font-body leading-relaxed">Secure your subscription data with industry-leading encryption and a clean, editorial approach to asset management.</p>
-          </div>
-        </section>
+    <AuthLayout
+      title="Securely set a new password."
+      description="Verify your one-time passcode first, then set a new password."
+      highlights={[
+        { title: 'Fast verification', description: 'A segmented 6-digit OTP input supports paste and quick auto-checks.' },
+        { title: 'Secure handoff', description: 'Password reset is enabled only after OTP verification succeeds.' },
+      ]}
+    >
+      <Card className="mx-auto w-full max-w-[460px] p-6 sm:p-8 lg:p-10">
+        <div className="mb-8 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">Reset password</p>
+          <h2 className="mt-3 font-serif text-3xl font-bold text-primary">Verify OTP</h2>
+          <p className="mt-2 text-sm leading-6 text-on-surface-variant">
+            {otpVerified ? 'OTP verified. Set your new password below.' : 'Enter the 6-digit code sent to your email.'}
+          </p>
+        </div>
 
-        {/* Right Section: Auth Cards */}
-        <section className="w-full md:w-1/2 flex flex-col items-center justify-center p-6 space-y-12 relative overflow-hidden">
-           {/* Mobile background decor */}
-           <div className="md:hidden absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#031839 1px, transparent 1px), linear-gradient(90deg, #031839 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        {error ? <Alert variant="error" className="mb-6">{error}</Alert> : null}
+        {successMessage ? <Alert className="mb-6">{successMessage}</Alert> : null}
 
-          <div className="mb-4 flex flex-col items-center relative z-10">
-            <h1 className="text-3xl font-serif font-bold text-primary tracking-tight">SubSync</h1>
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Field label="Email address" required>
+            <Input
+              id="email"
+              type="email"
+              placeholder="name@company.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setOtpVerified(false)
+                setSuccessMessage('')
+              }}
+              autoComplete="email"
+              required
+              disabled={loading || verifyingOtp || otpVerified}
+            />
+          </Field>
 
-          <div className="w-full max-w-[420px] bg-white p-10 rounded-xl shadow-[0_10px_40px_rgba(3,24,57,0.05)] border border-primary/5 relative z-10">
-            {!emailSent ? (
-              <>
-                <div className="text-center mb-10">
-                  <h2 className="text-3xl font-serif text-primary font-bold mb-2 italic">Reset password</h2>
-                  <p className="text-on-surface-variant text-sm font-body">We'll send a reset link to your email</p>
-                </div>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant px-1" htmlFor="email">Email Address</label>
-                    <input
-                      className="w-full px-4 py-3.5 bg-surface-container-highest rounded-lg border-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-200 text-on-surface font-body outline-none placeholder:text-slate-400"
-                      id="email"
-                      type="email"
-                      placeholder="name@company.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <button
-                    className="w-full py-4 bg-primary text-on-primary font-bold rounded-lg hover:opacity-95 active:scale-[0.99] transition-all duration-200 shadow-sm"
-                    type="submit"
-                  >
-                    Send Reset Link
-                  </button>
-                </form>
-              </>
-            ) : (
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center mb-8">
-                  <span className="material-symbols-outlined text-tertiary-fixed-dim text-4xl" style={{ fontVariationSettings: '"FILL" 1' }}>check_circle</span>
-                </div>
-                <h2 className="text-3xl font-serif text-primary font-bold mb-2 italic">Check your inbox</h2>
-                <p className="text-on-surface-variant text-sm font-body mb-8 leading-relaxed">
-                  A reset link has been sent to <br/><span className="font-bold text-primary">{email}</span>
-                </p>
-                <button 
-                   onClick={() => setEmailSent(false)}
-                   className="w-full py-4 bg-surface-container-high text-primary font-bold rounded-lg hover:bg-surface-container-highest transition-all duration-200"
-                >
-                  Resend email
-                </button>
-              </div>
-            )}
-            
-            <div className="mt-8 text-center border-t border-slate-50 pt-8">
-              <Link className="text-sm font-semibold text-tertiary-fixed-dim hover:text-primary transition-all duration-200" to="/login">
-                Back to Sign In
-              </Link>
+          <Field label="One-time passcode" required hint="Type or paste your 6-digit OTP.">
+            <div className="grid grid-cols-6 gap-2 sm:gap-3" onPaste={handleOtpPaste}>
+              {otpDigits.map((digit, index) => (
+                <input
+                  key={`otp-digit-${index}`}
+                  ref={(element) => {
+                    otpInputRefs.current[index] = element
+                  }}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  autoComplete="one-time-code"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(event) => handleOtpChange(index, event.target.value)}
+                  onKeyDown={(event) => handleOtpKeyDown(index, event)}
+                  disabled={loading || verifyingOtp || otpVerified}
+                  className="h-12 w-full rounded-2xl border border-outline-variant bg-white text-center text-xl font-semibold text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/25 sm:h-14"
+                  aria-label={`OTP digit ${index + 1}`}
+                />
+              ))}
             </div>
-          </div>
+          </Field>
 
-          <footer className="w-full max-w-[420px] flex justify-between px-2 relative z-10 opacity-30">
-            <p className="text-[10px] uppercase tracking-widest font-bold text-primary">© 2024 SubSync Ledger</p>
-            <div className="flex gap-4">
-              <a className="text-[10px] uppercase tracking-widest font-bold text-primary hover:underline" href="#">Privacy</a>
-              <a className="text-[10px] uppercase tracking-widest font-bold text-primary hover:underline" href="#">Terms</a>
-            </div>
-          </footer>
-        </section>
-      </main>
-    </div>
+          {!otpVerified ? (
+            <Button
+              type="button"
+              block
+              size="lg"
+              onClick={handleVerifyOtp}
+              disabled={loading || verifyingOtp || otpValue.length !== 6 || !email}
+            >
+              {verifyingOtp ? 'Verifying OTP...' : 'Verify OTP'}
+            </Button>
+          ) : null}
+
+          {otpVerified ? (
+            <>
+              <Field label="New password" required hint="Minimum 8 characters.">
+                <Input
+                  id="new-password"
+                  type="password"
+                  autoComplete="new-password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+              </Field>
+
+              <Field label="Confirm new password" required>
+                <Input
+                  id="confirm-new-password"
+                  type="password"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+              </Field>
+
+              <Button type="submit" block size="lg" disabled={loading}>
+                {loading ? 'Resetting password...' : 'Reset password'}
+              </Button>
+            </>
+          ) : null}
+        </form>
+
+        <div className="mt-8 border-t border-surface-container pt-6 text-center">
+          <p className="mb-2 text-sm text-on-surface-variant">
+            Need a new OTP?{' '}
+            <Link className="font-semibold text-primary underline-offset-4 hover:underline" to="/forgot-password">
+              Request again
+            </Link>
+          </p>
+          <Link className="text-sm font-semibold text-primary underline-offset-4 hover:underline" to="/login">
+            Back to sign in
+          </Link>
+        </div>
+      </Card>
+    </AuthLayout>
   )
 }

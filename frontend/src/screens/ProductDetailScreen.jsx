@@ -5,7 +5,7 @@ import { productsAPI } from '../services/apiClient'
 import AppPage from '../components/AppPage'
 
 export default function ProductDetailScreen() {
-    const { user, logout } = useAuth()
+    const { user, loading: authLoading, logout } = useAuth()
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const productId = searchParams.get('id')
@@ -21,6 +21,10 @@ export default function ProductDetailScreen() {
     }
 
     useEffect(() => {
+        if (authLoading) {
+            return // Still loading auth, wait
+        }
+
         if (!user) {
             navigate('/login', { replace: true })
             return
@@ -45,7 +49,7 @@ export default function ProductDetailScreen() {
         }
 
         load()
-    }, [navigate, productId, user])
+    }, [navigate, productId, user, authLoading])
 
     const onChange = (name, value) => {
         setProduct((prev) => ({ ...prev, [name]: value }))

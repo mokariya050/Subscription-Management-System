@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import AuthLayout from '../components/layout/AuthLayout'
+import Card from '../components/ui/Card'
+import Field from '../components/ui/Field'
+import Input from '../components/ui/Input'
+import Alert from '../components/ui/Alert'
+import Button from '../components/ui/Button'
 
 export default function SignUpScreen() {
     const [formData, setFormData] = useState({
@@ -62,156 +68,119 @@ export default function SignUpScreen() {
     }
 
     return (
-        <div className="min-h-screen bg-surface-container-low flex font-body text-on-surface">
-            {/* Left Section: Aesthetic/Pattern */}
-            <div className="hidden lg:flex lg:w-1/2 relative bg-surface items-center justify-center overflow-hidden p-20">
-                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#031839 0.5px, transparent 0.5px), radial-gradient(#031839 0.5px, #fbf9f5 0.5px)', backgroundSize: '40px 40px', backgroundPosition: '0 0, 20px 20px' }}></div>
-                <div className="absolute inset-0 opacity-[0.05]" style={{ background: 'linear-gradient(90deg, rgba(3, 24, 57, 0.05) 1px, transparent 1px) 0 0 / 50px 50px, linear-gradient(rgba(3, 24, 57, 0.05) 1px, transparent 1px) 0 0 / 50px 50px' }}></div>
-                
-                <div className="relative z-10 text-left max-w-xl">
-                    <h2 className="font-headline text-5xl font-bold text-primary leading-tight mb-6 italic">Master your subscriptions with editorial precision.</h2>
-                    <p className="text-on-surface-variant text-lg tracking-tight leading-relaxed">Join the curated ledger for modern business finance. Experience transparency like never before.</p>
-                    <div className="mt-16 space-y-8">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
-                                <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
-                            </div>
-                            <span className="font-label text-sm uppercase tracking-widest text-primary font-bold">Automated Auditing</span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
-                                <span className="material-symbols-outlined text-primary">analytics</span>
-                            </div>
-                            <span className="font-label text-sm uppercase tracking-widest text-primary font-bold">Cost Forecasting</span>
-                        </div>
-                    </div>
+        <AuthLayout
+            title="Master your subscriptions with editorial precision."
+            description="Create an account to manage customers, subscriptions, and billing with a clean workspace that stays approachable on every screen size."
+            highlights={[
+                { title: 'Readable forms', description: 'Clear grouping, labels, and focus states reduce friction while entering data.' },
+                { title: 'Consistent spacing', description: 'Reusable components keep forms and dashboards visually aligned.' },
+            ]}
+        >
+            <Card className="mx-auto w-full max-w-[520px] p-6 sm:p-8 lg:p-10">
+                <div className="mb-8">
+                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">SubSync</p>
+                    <h2 className="mt-3 font-serif text-3xl font-bold text-primary">Create account</h2>
+                    <p className="mt-2 text-sm leading-6 text-on-surface-variant">Start managing subscriptions today.</p>
                 </div>
-            </div>
 
-            {/* Right Section: Auth Card */}
-            <main className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12">
-                <div className="w-full max-w-[420px] bg-surface-container-lowest rounded-xl p-10 shadow-[0_10px_40px_rgba(27,45,79,0.05)] border border-primary/5 transition-all duration-200">
-                    {/* Logo & Header */}
-                    <header className="mb-10">
-                        <div className="flex items-center gap-2 mb-8">
-                            <span className="material-symbols-outlined text-primary text-3xl">account_balance</span>
-                            <span className="font-headline text-2xl font-bold text-primary tracking-tight">SubSync</span>
-                        </div>
-                        <h1 className="font-headline text-3xl font-bold text-primary leading-tight">Create account</h1>
-                        <p className="font-body text-on-surface-variant text-sm mt-2">Start managing subscriptions today</p>
-                    </header>
+                {error ? <Alert variant="error" className="mb-6">{error}</Alert> : null}
 
-                    {/* Error Message */}
-                    {error && (
-                        <div className="mb-6 p-4 bg-error-container text-on-error-container rounded-lg text-sm border border-error/10">
-                            {error}
-                        </div>
-                    )}
-
-                    {/* Sign Up Form */}
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-2" htmlFor="first_name">First Name</label>
-                                <input
-                                    id="first_name"
-                                    name="first_name"
-                                    type="text"
-                                    value={formData.first_name}
-                                    onChange={handleChange}
-                                    placeholder="Julian"
-                                    required
-                                    disabled={loading}
-                                    className="w-full px-4 py-3 bg-surface-container-highest border-none rounded-lg focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-200 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-2" htmlFor="last_name">Last Name</label>
-                                <input
-                                    id="last_name"
-                                    name="last_name"
-                                    type="text"
-                                    value={formData.last_name}
-                                    onChange={handleChange}
-                                    placeholder="Thorne"
-                                    required
-                                    disabled={loading}
-                                    className="w-full px-4 py-3 bg-surface-container-highest border-none rounded-lg focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-200 outline-none"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-2" htmlFor="email">Email</label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                value={formData.email}
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid gap-5 md:grid-cols-2">
+                        <Field label="First name" required>
+                            <Input
+                                id="first_name"
+                                name="first_name"
+                                type="text"
+                                value={formData.first_name}
                                 onChange={handleChange}
-                                placeholder="julian@company.com"
+                                placeholder="Julian"
+                                autoComplete="given-name"
                                 required
                                 disabled={loading}
-                                className="w-full px-4 py-3 bg-surface-container-highest border-none rounded-lg focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-200 outline-none"
                             />
-                        </div>
+                        </Field>
+                        <Field label="Last name" required>
+                            <Input
+                                id="last_name"
+                                name="last_name"
+                                type="text"
+                                value={formData.last_name}
+                                onChange={handleChange}
+                                placeholder="Thorne"
+                                autoComplete="family-name"
+                                required
+                                disabled={loading}
+                            />
+                        </Field>
+                    </div>
 
-                        <div>
-                            <label className="block font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-2" htmlFor="password">Password</label>
-                            <div className="relative">
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    placeholder="••••••••"
-                                    required
-                                    disabled={loading}
-                                    className="w-full px-4 py-3 bg-surface-container-highest border-none rounded-lg focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-200 outline-none pr-10"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary"
-                                >
-                                    <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
-                                </button>
-                            </div>
-                        </div>
+                    <Field label="Email" required>
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="julian@company.com"
+                            autoComplete="email"
+                            required
+                            disabled={loading}
+                        />
+                    </Field>
 
-                        <div>
-                             <label className="block font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-2" htmlFor="confirmPassword">Confirm Password</label>
-                             <input
-                                id="confirmPassword"
-                                name="confirmPassword"
+                    <Field id="signup-password" label="Password" required>
+                        <div className="relative">
+                            <Input
+                                id="signup-password"
+                                name="password"
                                 type={showPassword ? 'text' : 'password'}
-                                value={formData.confirmPassword}
+                                value={formData.password}
                                 onChange={handleChange}
                                 placeholder="••••••••"
+                                autoComplete="new-password"
                                 required
                                 disabled={loading}
-                                className="w-full px-4 py-3 bg-surface-container-highest border-none rounded-lg focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-200 outline-none"
+                                className="pr-24"
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-sm font-semibold text-primary transition hover:bg-surface-container-low focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                            >
+                                {showPassword ? 'Hide' : 'Show'}
+                            </button>
                         </div>
+                    </Field>
 
-                        <button
-                            type="submit"
+                    <Field id="signup-confirm-password" label="Confirm password" required>
+                        <Input
+                            id="signup-confirm-password"
+                            name="confirmPassword"
+                            type={showPassword ? 'text' : 'password'}
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            placeholder="••••••••"
+                            autoComplete="new-password"
+                            required
                             disabled={loading}
-                            className="w-full py-4 bg-primary text-on-primary font-bold rounded-lg transition-all duration-200 hover:opacity-90 active:scale-[0.98] mt-4 shadow-sm"
-                        >
-                            {loading ? 'Creating account...' : 'Create Account'}
-                        </button>
-                    </form>
+                        />
+                    </Field>
 
-                    <footer className="mt-8 text-center border-t border-surface-container pt-8">
-                        <p className="font-body text-sm text-on-surface-variant">
-                            Already have an account?
-                            <Link to="/login" className="text-tertiary-fixed-dim font-bold hover:underline transition-all underline-offset-4 ml-1">Sign in</Link>
-                        </p>
-                    </footer>
-                </div>
-            </main>
-        </div>
+                    <Button type="submit" block size="lg" disabled={loading}>
+                        {loading ? 'Creating account...' : 'Create account'}
+                    </Button>
+                </form>
+
+                <footer className="mt-8 border-t border-surface-container pt-6 text-center">
+                    <p className="text-sm text-on-surface-variant">
+                        Already have an account?{' '}
+                        <Link to="/login" className="font-semibold text-primary underline-offset-4 hover:underline">
+                            Sign in
+                        </Link>
+                    </p>
+                </footer>
+            </Card>
+        </AuthLayout>
     )
 }

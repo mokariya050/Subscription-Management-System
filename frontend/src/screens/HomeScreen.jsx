@@ -1,17 +1,38 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { subscriptionsAPI } from '../services/apiClient'
 import AppPage from '../components/AppPage'
+import DataTable from '../components/ui/DataTable'
+import EmptyState from '../components/ui/EmptyState'
+import Card from '../components/ui/Card'
+import Badge from '../components/ui/Badge'
 
 export default function HomeScreen() {
-    const { user, logout } = useAuth()
+    const { user, loading: authLoading, logout } = useAuth()
     const navigate = useNavigate()
     const [subscriptions, setSubscriptions] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
 
+    const stats = useMemo(() => {
+        const total = subscriptions.length
+        const active = subscriptions.filter((sub) => sub.status === 'active').length
+        const paused = subscriptions.filter((sub) => sub.status === 'paused').length
+
+        return [
+            { label: 'Total subscriptions', value: total },
+            { label: 'Active', value: active },
+            { label: 'Paused', value: paused },
+        ]
+    }, [subscriptions])
+
+    // Wait for auth to load, then check authentication
     useEffect(() => {
+        if (authLoading) {
+            return // Still loading auth, wait
+        }
+
         if (!user) {
             navigate('/login', { replace: true })
             return
@@ -30,7 +51,7 @@ export default function HomeScreen() {
         }
 
         load()
-    }, [navigate, user])
+    }, [navigate, user, authLoading])
 
     const onLogout = async () => {
         await logout()
@@ -43,46 +64,60 @@ export default function HomeScreen() {
             onLogout={onLogout}
             title="Subscriptions"
             subtitle="Live data from backend API"
-            actions={<Link to="/subscription/other-info" className="bg-[#1b2d4f] text-white px-5 py-2 rounded-md text-sm font-semibold">New</Link>}
+            actions={
+                <Link
+                    to="/subscription/other-info"
+                    className="inline-flex items-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                    New subscription
+                </Link>
+            }
         >
 
-            {error && <div className="mb-4 p-3 rounded border border-red-200 bg-red-50 text-red-700 text-sm">{error}</div>}
+            {error ? <div className="mb-6 rounded-2xl border border-error/20 bg-error-container px-4 py-3 text-sm text-on-error-container">{error}</div> : null}
+
+            <div className="mb-6 grid gap-4 md:grid-cols-3">
+                {stats.map((item) => (
+                    <Card key={item.label} className="p-5">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">{item.label}</p>
+                        <p className="mt-3 font-serif text-3xl font-bold text-primary">{item.value}</p>
+                    </Card>
+                ))}
+            </div>
 
             {loading ? (
-                <div className="py-10 text-center text-slate-500">Loading subscriptions...</div>
-            ) : subscriptions.length === 0 ? (
-                <div className="bg-white rounded-xl border border-[#e5e3df] p-10 text-center">No subscriptions yet.</div>
-            ) : (
-                <div className="bg-white rounded-xl border border-[#e5e3df] overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="border-b border-[#e5e3df] text-xs uppercase tracking-wider">
-                                <th className="px-4 py-3">ID</th>
-                                <th className="px-4 py-3">Customer</th>
-                                <th className="px-4 py-3">Plan</th>
-                                <th className="px-4 py-3">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {subscriptions.map((sub) => (
-                                <tr key={sub.id} className="border-b border-[#f0efec] hover:bg-[#f9f8f6] cursor-pointer" onClick={() => navigate(`/subscription/detail?id=${sub.id}`)}>
-                                    <td className="px-4 py-3"># <span className="font-semibold">{sub.id}</span></td>
-                                    <td className="px-4 py-3">{sub.customer_name || 'N/A'}</td>
-                                    <td className="px-4 py-3">{sub.plan_name || 'N/A'}</td>
-                                    <td className="px-4 py-3">
-                                        <span className={`px-2 py-1 rounded text-xs font-semibold ${sub.status === 'active' ? 'bg-green-100 text-green-800' :
-                                            sub.status === 'paused' ? 'bg-yellow-100 text-yellow-800' :
-                                                sub.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                                                    'bg-gray-100 text-gray-800'
-                                            }`}>
-                                            {sub.status || 'unknown'}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="rounded-[1.75rem] border border-dashed border-outline-variant bg-white/70 py-14 text-center text-sm text-on-surface-variant">
+                    Loading subscriptions...
                 </div>
+            ) : subscriptions.length === 0 ? (
+                <EmptyState
+                    title="No subscriptions yet"
+                    description="Create a subscription to see activity, status, and invoices appear here."
+                    actionLabel="Create subscription"
+                    onAction={() => navigate('/subscription/other-info')}
+                />
+            ) : (
+                <DataTable
+                    caption="Subscription list"
+                    rows={subscriptions}
+                    getRowKey={(sub) => sub.id}
+                    onRowClick={(sub) => navigate(`/subscription/detail?id=${sub.id}`)}
+                    emptyMessage="No subscriptions available."
+                    columns={[
+                        { key: 'id', label: 'ID', render: (sub) => <span className="font-semibold text-primary">#{sub.id}</span> },
+                        { key: 'customer_name', label: 'Customer', render: (sub) => sub.customer_name || 'N/A' },
+                        { key: 'plan_name', label: 'Plan', render: (sub) => sub.plan_name || 'N/A' },
+                        {
+                            key: 'status',
+                            label: 'Status',
+                            render: (sub) => {
+                                const status = String(sub.status || 'unknown').toLowerCase()
+                                const variant = status === 'active' ? 'success' : status === 'paused' ? 'warning' : status === 'cancelled' ? 'danger' : 'neutral'
+                                return <Badge variant={variant}>{status}</Badge>
+                            },
+                        },
+                    ]}
+                />
             )}
         </AppPage>
     )

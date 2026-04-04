@@ -3,7 +3,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Subscription, Plan, User, Invoice, InvoiceItem, Payment, PaymentMethod, db
 from app.schemas import SubscriptionSchema, InvoiceSchema, PaymentSchema
-from app.utils import success_response, error_response, create_audit_log
+from app.utils import success_response, error_response, create_audit_log, is_json_request
 from datetime import datetime, timedelta
 
 subscriptions_bp = Blueprint('subscriptions', __name__, url_prefix='/api/subscriptions')
@@ -61,6 +61,34 @@ def get_subscription(subscription_id):
     return success_response(SubscriptionSchema().dump(subscription))
 
 
+@subscriptions_bp.route('/<int:subscription_id>/invoices', methods=['GET'])
+@jwt_required()
+def get_subscription_invoices(subscription_id):
+    """Get invoices for a subscription"""
+    user_id = int(get_jwt_identity())
+    user = User.query.get(user_id)
+
+    if not user or user.deleted_at:
+        return error_response('Unauthorized', 401)
+
+    subscription = Subscription.query.get(subscription_id)
+    if not subscription or subscription.deleted_at:
+        return error_response('Subscription not found', 404)
+
+    is_admin = user.roles.filter_by(role='admin').first() is not None
+    if not (subscription.user_id == user_id or (is_admin and subscription.account_id == user.account_id)):
+        return error_response('Forbidden', 403)
+
+    invoices = (
+        Invoice.query
+        .filter_by(subscription_id=subscription_id)
+        .order_by(Invoice.created_at.desc())
+        .all()
+    )
+
+    return success_response(InvoiceSchema(many=True).dump(invoices))
+
+
 @subscriptions_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_subscription():
@@ -71,7 +99,7 @@ def create_subscription():
     if not user or user.deleted_at:
         return error_response('Unauthorized', 401)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -170,10 +198,9 @@ def cancel_subscription(subscription_id):
     if subscription.user_id != user_id:
         return error_response('Forbidden', 403)
     
-    if not request.is_json:
+    data = request.get_json(silent=True) if is_json_request() else {}
+    if not isinstance(data, dict):
         data = {}
-    else:
-        data = request.get_json()
     
     try:
         old_value = SubscriptionSchema().dump(subscription)
@@ -212,6 +239,11 @@ def pause_subscription(subscription_id):
     
     if subscription.user_id != user_id:
         return error_response('Forbidden', 403)
+
+    if is_json_request():
+        payload = request.get_json(silent=True)
+        if payload is not None and not isinstance(payload, dict):
+            return error_response('Invalid JSON', 400)
     
     try:
         old_value = SubscriptionSchema().dump(subscription)
@@ -250,6 +282,11 @@ def resume_subscription(subscription_id):
     
     if subscription.status != 'paused':
         return error_response('Only paused subscriptions can be resumed', 400)
+
+    if is_json_request():
+        payload = request.get_json(silent=True)
+        if payload is not None and not isinstance(payload, dict):
+            return error_response('Invalid JSON', 400)
     
     try:
         old_value = SubscriptionSchema().dump(subscription)

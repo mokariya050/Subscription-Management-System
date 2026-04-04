@@ -1,18 +1,30 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import AppPage from '../components/AppPage'
+import { useEffect } from 'react'
+import Card from '../components/ui/Card'
 
 export default function ConfigurationScreen() {
-  const { user, logout } = useAuth()
+  const { user, loading, logout } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (loading) {
+      return // Still loading auth, wait
+    }
+
+    if (!user) {
+      navigate('/login', { replace: true })
+    }
+  }, [navigate, user, loading])
 
   const onLogout = async () => {
     await logout()
     navigate('/login', { replace: true })
   }
 
-  if (!user) {
-    navigate('/login', { replace: true })
+  // Show nothing while auth is loading
+  if (loading || !user) {
     return null
   }
 
@@ -24,26 +36,26 @@ export default function ConfigurationScreen() {
       subtitle="Manage system configuration and settings"
     >
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Link to="/configuration/recurring-plan" className="bg-white border border-[#e5e3df] rounded-lg p-6 hover:shadow-md hover:border-[#d0cec9] transition-all">
-          <h3 className="text-lg font-bold mb-2">Recurring Plans</h3>
-          <p className="text-sm text-slate-500">Manage subscription plans and billing cycles</p>
-        </Link>
-
-        <Link to="/configuration/attribute" className="bg-white border border-[#e5e3df] rounded-lg p-6 hover:shadow-md hover:border-[#d0cec9] transition-all">
-          <h3 className="text-lg font-bold mb-2">Attributes</h3>
-          <p className="text-sm text-slate-500">Configure product attributes and properties</p>
-        </Link>
-
-        <Link to="/configuration/quotation-template" className="bg-white border border-[#e5e3df] rounded-lg p-6 hover:shadow-md hover:border-[#d0cec9] transition-all">
-          <h3 className="text-lg font-bold mb-2">Quotation Templates</h3>
-          <p className="text-sm text-slate-500">Manage quotation and proposal templates</p>
-        </Link>
-
-        <Link to="/configuration/tax" className="bg-white border border-[#e5e3df] rounded-lg p-6 hover:shadow-md hover:border-[#d0cec9] transition-all">
-          <h3 className="text-lg font-bold mb-2">Taxes</h3>
-          <p className="text-sm text-slate-500">Configure tax rules and rates</p>
-        </Link>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {[
+          ['/configuration/recurring-plan', 'Recurring Plans', 'Manage subscription plans and billing cycles'],
+          ['/configuration/variant', 'Variants', 'Manage reusable variant groups for products'],
+          ['/configuration/attribute', 'Attributes', 'Configure product attributes and properties'],
+          ['/configuration/quotation-template', 'Quotation Templates', 'Manage quotation and proposal templates'],
+          ['/configuration/payment-term', 'Payment Terms', 'Define due dates and payment schedules'],
+          ['/configuration/discount', 'Discounts', 'Manage default discount definitions'],
+          ['/configuration/tax', 'Taxes', 'Configure tax rules and rates'],
+        ].map(([to, title, description]) => (
+          <Card
+            key={to}
+            as={Link}
+            to={to}
+            className="block p-6 transition hover:-translate-y-0.5 hover:border-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <h3 className="text-lg font-semibold text-primary">{title}</h3>
+            <p className="mt-2 text-sm leading-6 text-on-surface-variant">{description}</p>
+          </Card>
+        ))}
       </div>
     </AppPage>
   )

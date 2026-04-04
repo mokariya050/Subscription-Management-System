@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Invoice, InvoiceItem, Payment, Subscription, User, PaymentMethod, db
 from app.schemas import InvoiceSchema, InvoiceItemSchema, PaymentSchema
-from app.utils import success_response, error_response, create_audit_log
+from app.utils import success_response, error_response, create_audit_log, is_json_request
 from datetime import datetime
 
 invoices_bp = Blueprint('invoices', __name__, url_prefix='/api/invoices')
@@ -101,7 +101,7 @@ def create_invoice():
     if not is_admin:
         return error_response('Admin required', 403)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -268,7 +268,7 @@ def create_payment():
     if not user or user.deleted_at:
         return error_response('Unauthorized', 401)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -282,23 +282,30 @@ def create_payment():
     invoice = Invoice.query.get(data['invoice_id'])
     if not invoice:
         return error_response('Invoice not found', 404)
-    
-    if invoice.user_id != user_id:
+
+    is_admin = user.roles.filter_by(role='admin').first() is not None
+    can_access_invoice = invoice.user_id == user_id or (is_admin and invoice.account_id == user.account_id)
+    if not can_access_invoice:
         return error_response('Forbidden', 403)
     
     # Verify payment method
     payment_method = PaymentMethod.query.get(data['payment_method_id'])
     if not payment_method:
         return error_response('Payment method not found', 404)
-    
-    if payment_method.user_id != user_id:
+
+    # Payment method must belong to the invoice owner to avoid cross-user charging.
+    if payment_method.user_id != invoice.user_id:
+        return error_response('Payment method does not belong to invoice owner', 403)
+
+    payment_method_user = User.query.get(payment_method.user_id)
+    if not payment_method_user or payment_method_user.account_id != invoice.account_id:
         return error_response('Forbidden', 403)
     
     try:
         # Process payment (mock - always succeeds)
         payment = Payment(
             invoice_id=data['invoice_id'],
-            user_id=user_id,
+            user_id=invoice.user_id,
             payment_method_id=data['payment_method_id'],
             amount_cents=data['amount_cents'],
             currency=data.get('currency', 'USD'),

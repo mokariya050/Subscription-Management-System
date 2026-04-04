@@ -1,9 +1,9 @@
 """User management routes"""
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import User, Account, UserRole, Address, PaymentMethod, db
 from app.schemas import UserSchema, AddressSchema, PaymentMethodSchema
-from app.utils import success_response, error_response, token_required, create_audit_log, admin_required
+from app.utils import success_response, error_response, token_required, create_audit_log, admin_required, hash_password, is_json_request
 from datetime import datetime
 
 users_bp = Blueprint('users', __name__, url_prefix='/api/users')
@@ -77,7 +77,7 @@ def update_user(user_id):
     if not (current_user_id == user_id or (is_admin and current_user.account_id == target_user.account_id)):
         return error_response('Forbidden', 403)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -155,7 +155,7 @@ def add_user_role(user_id):
     if current_user.account_id != target_user.account_id:
         return error_response('Forbidden', 403)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -221,7 +221,7 @@ def create_address(user_id):
     if current_user_id != user_id:
         return error_response('Forbidden', 403)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -265,8 +265,10 @@ def get_user_payment_methods(user_id):
     if not target_user or target_user.deleted_at:
         return error_response('User not found', 404)
     
-    # Can only view own
-    if current_user_id != user_id:
+    is_admin = current_user.roles.filter_by(role='admin').first() is not None
+
+    # Can view own methods, or admin can view methods within same account.
+    if not (current_user_id == user_id or (is_admin and target_user.account_id == current_user.account_id)):
         return error_response('Forbidden', 403)
     
     methods = PaymentMethod.query.filter_by(user_id=user_id).all()
@@ -282,12 +284,18 @@ def create_payment_method(user_id):
     
     if not current_user or current_user.deleted_at:
         return error_response('Unauthorized', 401)
-    
-    # Can only create for self
-    if current_user_id != user_id:
+
+    target_user = User.query.get(user_id)
+    if not target_user or target_user.deleted_at:
+        return error_response('User not found', 404)
+
+    is_admin = current_user.roles.filter_by(role='admin').first() is not None
+
+    # Can create for self, or admin can create for same-account user.
+    if not (current_user_id == user_id or (is_admin and target_user.account_id == current_user.account_id)):
         return error_response('Forbidden', 403)
     
-    if not request.is_json:
+    if not is_json_request():
         return error_response('Content-Type must be application/json', 400)
     
     data = request.get_json()
@@ -314,3 +322,190 @@ def create_payment_method(user_id):
     except Exception as e:
         db.session.rollback()
         return error_response(f'Failed to create payment method: {str(e)}', 400)
+
+
+# ==================== USER CREATION (ADMIN ONLY) ====================
+
+@users_bp.route('/', methods=['POST'])
+@admin_required
+def create_user():
+    """Create a new user (admin only)"""
+    try:
+        if not is_json_request():
+            return error_response('Content-Type must be application/json', 400)
+        
+        data = request.get_json()
+        current_user = g.user
+        
+        # Validate required fields
+        required_fields = ['email', 'password', 'first_name', 'last_name']
+        missing = [f for f in required_fields if f not in data]
+        if missing:
+            return error_response(f'Missing fields: {", ".join(missing)}', 400)
+        
+        # Check if user already exists
+        if User.query.filter_by(email=data['email']).first():
+            return error_response('Email already registered', 409)
+        
+        try:
+            # Create user
+            user = User(
+                account_id=current_user.account_id,
+                email=data['email'],
+                password_hash=hash_password(data['password']),
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                phone=data.get('phone'),
+                is_active=True
+            )
+            
+            db.session.add(user)
+            db.session.flush()
+            
+            # Assign default role (internal_user)
+            default_role = data.get('role', 'internal_user')
+            role = UserRole(
+                user_id=user.id,
+                role=default_role,
+                granted_by_user_id=current_user.id
+            )
+            db.session.add(role)
+            
+            db.session.commit()
+            
+            # Create audit log
+            create_audit_log(
+                current_user.id,
+                current_user.account_id,
+                'user_created',
+                'users',
+                user.id,
+                new_value={'email': user.email, 'name': f'{user.first_name} {user.last_name}', 'role': default_role}
+            )
+            
+            return success_response(
+                data=UserSchema().dump(user),
+                message='User created successfully',
+                code=201
+            )
+        except Exception as e:
+            db.session.rollback()
+            return error_response(f'Failed to create user: {str(e)}', 500)
+    except Exception as e:
+        return error_response(f'Failed to create user: {str(e)}', 500)
+
+
+# ==================== USER DEACTIVATION (ADMIN ONLY) ====================
+
+@users_bp.route('/<int:user_id>/deactivate', methods=['POST'])
+@admin_required
+def deactivate_user(user_id):
+    """Deactivate user (soft delete)"""
+    try:
+        current_user = g.user
+        user = User.query.get(user_id)
+        
+        if not user:
+            return error_response('User not found', 404)
+        
+        # Prevent deactivating yourself
+        if user.id == current_user.id:
+            return error_response('Cannot deactivate your own account', 400)
+        
+        # Verify same account
+        if user.account_id != current_user.account_id:
+            return error_response('Forbidden', 403)
+        
+        user.is_active = False
+        user.deleted_at = datetime.utcnow()
+        db.session.commit()
+        
+        # Create audit log
+        create_audit_log(
+            current_user.id,
+            current_user.account_id,
+            'user_deactivated',
+            'users',
+            user.id,
+            old_value={'is_active': True},
+            new_value={'is_active': False}
+        )
+        
+        return success_response(
+            message='User deactivated successfully'
+        )
+    except Exception as e:
+        db.session.rollback()
+        return error_response(f'Failed to deactivate user: {str(e)}', 500)
+
+
+# ==================== ROLE REMOVAL ====================
+
+@users_bp.route('/roles/<int:role_id>', methods=['DELETE'])
+@admin_required
+def remove_role(role_id):
+    """Remove a role from a user"""
+    try:
+        current_user = g.user
+        role = UserRole.query.get(role_id)
+        
+        if not role:
+            return error_response('Role not found', 404)
+        
+        user = role.user
+        
+        # Verify same account
+        if user.account_id != current_user.account_id:
+            return error_response('Forbidden', 403)
+        
+        # Prevent removing last admin role if it's the current user
+        if role.role == 'admin' and user.id == current_user.id:
+            admin_count = user.roles.filter_by(role='admin').count()
+            if admin_count == 1:
+                return error_response('Cannot remove last admin role from yourself', 400)
+        
+        db.session.delete(role)
+        db.session.commit()
+        
+        # Create audit log
+        create_audit_log(
+            current_user.id,
+            current_user.account_id,
+            'role_removed',
+            'user_roles',
+            role.id,
+            old_value={'role': role.role, 'user_id': user.id}
+        )
+        
+        return success_response(
+            message='Role removed successfully'
+        )
+    except Exception as e:
+        db.session.rollback()
+        return error_response(f'Failed to remove role: {str(e)}', 500)
+
+
+# ==================== GET CURRENT USER ====================
+
+@users_bp.route('/me', methods=['GET'])
+@token_required
+def get_current_user():
+    """Get current user details"""
+    try:
+        user_id = g.user_id
+        user = User.query.get(user_id)
+        
+        if not user:
+            return error_response('User not found', 404)
+        
+        user_data = UserSchema().dump(user)
+        
+        # Add roles to response
+        user_data['roles'] = [role.role for role in user.roles.all()]
+        
+        return success_response(
+            data=user_data,
+            message='Current user retrieved successfully'
+        )
+    except Exception as e:
+        return error_response(f'Failed to retrieve current user: {str(e)}', 500)

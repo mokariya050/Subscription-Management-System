@@ -1,4 +1,5 @@
 import AppNavbar from './AppNavbar'
+import PageHeader from './layout/PageHeader'
 
 export default function AppPage({
     current,
@@ -10,21 +11,17 @@ export default function AppPage({
     children,
 }) {
     return (
-        <div className="min-h-screen bg-[#f5f3ef] text-[#1b2d4f]">
+        <div className="min-h-screen text-[#1b2d4f]">
             <AppNavbar current={current} onLogout={onLogout} />
 
-            <main className={`${maxWidth} mx-auto px-6 py-10`}>
-                {(title || subtitle || actions) && (
-                    <div className="mb-8 flex items-center justify-between gap-4">
-                        <div>
-                            {title && <h2 className="text-3xl font-serif font-bold">{title}</h2>}
-                            {subtitle && <p className="text-sm text-slate-500">{subtitle}</p>}
-                        </div>
-                        {actions && <div className="shrink-0">{actions}</div>}
-                    </div>
-                )}
+            <main id="app-main" tabIndex={-1} className={`mx-auto w-full ${maxWidth} px-4 py-6 sm:px-6 lg:px-8 lg:py-8`}>
+                <section className="rounded-[2rem] border border-white/70 bg-white/75 p-5 shadow-[0_18px_50px_rgba(27,45,79,0.08)] backdrop-blur-sm sm:p-7 lg:p-8">
+                    {(title || subtitle || actions) && (
+                        <PageHeader title={title} subtitle={subtitle} actions={actions} />
+                    )}
 
-                {children}
+                    <div className={title || subtitle || actions ? 'pt-6' : ''}>{children}</div>
+                </section>
             </main>
         </div>
     )

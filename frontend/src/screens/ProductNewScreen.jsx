@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { productsAPI } from '../services/apiClient'
 import AppPage from '../components/AppPage'
+import Card from '../components/ui/Card'
+import Field from '../components/ui/Field'
+import Input from '../components/ui/Input'
+import Select from '../components/ui/Select'
+import Textarea from '../components/ui/Textarea'
+import Button from '../components/ui/Button'
+import Alert from '../components/ui/Alert'
 
 export default function ProductNewScreen() {
   const { user, logout } = useAuth()
@@ -68,84 +75,73 @@ export default function ProductNewScreen() {
       subtitle="Create a new product for your subscriptions"
     >
 
-      {error && <div className="mb-4 p-3 rounded border border-red-200 bg-red-50 text-red-700 text-sm">{error}</div>}
+      {error ? <Alert variant="error" className="mb-6">{error}</Alert> : null}
 
-      <form onSubmit={handleSave} className="bg-white border border-[#e5e3df] rounded-xl p-8 space-y-6">
-        <div>
-          <label className="block text-xs uppercase tracking-wider font-bold mb-2">Product Name *</label>
-          <input
-            type="text"
-            required
-            value={formData.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            placeholder="e.g. Enterprise Cloud"
-            className="w-full border border-[#d0cec9] rounded-lg px-4 py-2 text-[#1b2d4f] focus:outline-none focus:border-[#1b2d4f]"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs uppercase tracking-wider font-bold mb-2">Slug *</label>
-            <input
+      <Card className="p-6 sm:p-8">
+        <form onSubmit={handleSave} className="space-y-6">
+          <Field label="Product name" required>
+            <Input
               type="text"
-              value={formData.slug}
-              onChange={(e) => handleChange('slug', e.target.value)}
-              placeholder="auto-generated from name"
-              className="w-full border border-[#d0cec9] rounded-lg px-4 py-2 text-[#1b2d4f] focus:outline-none focus:border-[#1b2d4f]"
+              required
+              value={formData.name}
+              onChange={(e) => handleChange('name', e.target.value)}
+              placeholder="e.g. Enterprise Cloud"
             />
+          </Field>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field label="Slug">
+              <Input
+                type="text"
+                value={formData.slug}
+                onChange={(e) => handleChange('slug', e.target.value)}
+                placeholder="auto-generated from name"
+              />
+            </Field>
+
+            <Field label="Product type" required>
+              <Select
+                value={formData.product_type}
+                onChange={(e) => handleChange('product_type', e.target.value)}
+              >
+                <option value="subscription">Subscription</option>
+                <option value="product">Product</option>
+              </Select>
+            </Field>
           </div>
 
-          <div>
-            <label className="block text-xs uppercase tracking-wider font-bold mb-2">Product Type *</label>
-            <select
-              value={formData.product_type}
-              onChange={(e) => handleChange('product_type', e.target.value)}
-              className="w-full border border-[#d0cec9] rounded-lg px-4 py-2 text-[#1b2d4f] focus:outline-none focus:border-[#1b2d4f]"
-            >
-              <option value="subscription">Subscription</option>
-              <option value="product">Product</option>
-            </select>
+          <Field label="Description">
+            <Textarea
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              placeholder="Product description"
+              rows={4}
+            />
+          </Field>
+
+          <label className="flex items-start gap-3 rounded-2xl border border-outline-variant bg-surface-container-low px-4 py-3">
+            <input
+              type="checkbox"
+              checked={formData.is_active}
+              onChange={(e) => handleChange('is_active', e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
+            />
+            <span>
+              <span className="block font-semibold text-on-surface">Active product</span>
+              <span className="block text-sm text-on-surface-variant">Inactive products stay hidden from future selections.</span>
+            </span>
+          </label>
+
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+            <Button type="submit" disabled={saving} className="sm:flex-1">
+              {saving ? 'Creating...' : 'Create product'}
+            </Button>
+            <Button type="button" variant="secondary" onClick={() => navigate('/products')} className="sm:flex-1">
+              Cancel
+            </Button>
           </div>
-        </div>
-
-        <div>
-          <label className="block text-xs uppercase tracking-wider font-bold mb-2">Description</label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => handleChange('description', e.target.value)}
-            placeholder="Product description"
-            rows={4}
-            className="w-full border border-[#d0cec9] rounded-lg px-4 py-2 text-[#1b2d4f] focus:outline-none focus:border-[#1b2d4f]"
-          />
-        </div>
-
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={formData.is_active}
-            onChange={(e) => handleChange('is_active', e.target.checked)}
-            className="rounded"
-          />
-          <span className="text-sm font-medium">Active</span>
-        </label>
-
-        <div className="flex gap-3 pt-4">
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex-1 bg-[#1b2d4f] text-white px-6 py-2 rounded-md text-sm font-semibold hover:opacity-90 disabled:opacity-60"
-          >
-            {saving ? 'Creating...' : 'Create Product'}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/products')}
-            className="flex-1 border border-[#d0cec9] text-[#1b2d4f] px-6 py-2 rounded-md text-sm font-semibold hover:bg-[#f9f8f6]"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+        </form>
+      </Card>
     </AppPage>
   )
 }

@@ -10,6 +10,14 @@ body,
   height: 100%;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 .screen-frame {
   border: 0;
   width: 100vw;
@@ -25,4 +33,39 @@ body,
 /* Global font defaults for JSX screens */
 body {
   font-family: 'Manrope', sans-serif;
+  color: #1b1c1a;
+  background:
+    radial-gradient(circle at top left, rgba(77, 94, 131, 0.12), transparent 30%),
+    linear-gradient(180deg, #fbf9f5 0%, #f5f3ef 100%);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(77, 94, 131, 0.18);
+  color: #031839;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid #031839;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

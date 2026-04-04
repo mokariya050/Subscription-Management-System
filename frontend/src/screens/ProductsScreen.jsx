@@ -1,17 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { productsAPI } from '../services/apiClient'
 import AppPage from '../components/AppPage'
+import DataTable from '../components/ui/DataTable'
+import EmptyState from '../components/ui/EmptyState'
+import Card from '../components/ui/Card'
+import Badge from '../components/ui/Badge'
 
 export default function ProductsScreen() {
-    const { user, logout } = useAuth()
+    const { user, loading: authLoading, logout } = useAuth()
     const navigate = useNavigate()
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
 
+    const stats = useMemo(() => {
+        const total = products.length
+        const active = products.filter((product) => product.is_active).length
+        return [
+            { label: 'Total products', value: total },
+            { label: 'Active products', value: active },
+            { label: 'Inactive products', value: Math.max(total - active, 0) },
+        ]
+    }, [products])
+
     useEffect(() => {
+        if (authLoading) {
+            return // Still loading auth, wait
+        }
+
         if (!user) {
             navigate('/login', { replace: true })
             return
@@ -30,7 +48,7 @@ export default function ProductsScreen() {
         }
 
         load()
-    }, [navigate, user])
+    }, [navigate, user, authLoading])
 
     const onLogout = async () => {
         await logout()
@@ -43,40 +61,59 @@ export default function ProductsScreen() {
             onLogout={onLogout}
             title="Products"
             subtitle="Live data from backend API"
-            actions={<Link to="/products/new" className="bg-[#1b2d4f] text-white px-5 py-2 rounded-md text-sm font-semibold">New Product</Link>}
+            actions={
+                <Link
+                    to="/products/new"
+                    className="inline-flex items-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                    New product
+                </Link>
+            }
         >
 
-            {error && <div className="mb-4 p-3 rounded border border-red-200 bg-red-50 text-red-700 text-sm">{error}</div>}
+            {error ? <div className="mb-6 rounded-2xl border border-error/20 bg-error-container px-4 py-3 text-sm text-on-error-container">{error}</div> : null}
+
+            <div className="mb-6 grid gap-4 md:grid-cols-3">
+                {stats.map((item) => (
+                    <Card key={item.label} className="p-5">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">{item.label}</p>
+                        <p className="mt-3 font-serif text-3xl font-bold text-primary">{item.value}</p>
+                    </Card>
+                ))}
+            </div>
 
             {loading ? (
-                <div className="py-10 text-center text-slate-500">Loading products...</div>
-            ) : products.length === 0 ? (
-                <div className="bg-white rounded-xl border border-[#e5e3df] p-10 text-center">No products found.</div>
-            ) : (
-                <div className="bg-white rounded-xl border border-[#e5e3df] overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="border-b border-[#e5e3df] text-xs uppercase tracking-wider">
-                                <th className="px-4 py-3">Name</th>
-                                <th className="px-4 py-3">Description</th>
-                                <th className="px-4 py-3">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {products.map((product) => (
-                                <tr key={product.id} className="border-b border-[#f0efec] hover:bg-[#f9f8f6] cursor-pointer" onClick={() => navigate(`/products/detail?id=${product.id}`)}>
-                                    <td className="px-4 py-3 font-semibold">{product.name}</td>
-                                    <td className="px-4 py-3 text-sm text-slate-600">{product.description || 'N/A'}</td>
-                                    <td className="px-4 py-3">
-                                        <span className={`px-2 py-1 rounded text-xs font-semibold ${product.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                                            {product.is_active ? 'Active' : 'Inactive'}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="rounded-[1.75rem] border border-dashed border-outline-variant bg-white/70 py-14 text-center text-sm text-on-surface-variant">
+                    Loading products...
                 </div>
+            ) : products.length === 0 ? (
+                <EmptyState
+                    title="No products found"
+                    description="Add a product to start building catalog entries and subscription plans."
+                    actionLabel="Create product"
+                    onAction={() => navigate('/products/new')}
+                />
+            ) : (
+                <DataTable
+                    caption="Product list"
+                    rows={products}
+                    getRowKey={(product) => product.id}
+                    onRowClick={(product) => navigate(`/products/detail?id=${product.id}`)}
+                    emptyMessage="No products available."
+                    columns={[
+                        { key: 'name', label: 'Name', render: (product) => <span className="font-semibold text-primary">{product.name}</span> },
+                        { key: 'description', label: 'Description', render: (product) => product.description || 'N/A' },
+                        {
+                            key: 'is_active',
+                            label: 'Status',
+                            render: (product) => (
+                                <Badge variant={product.is_active ? 'success' : 'neutral'}>
+                                    {product.is_active ? 'Active' : 'Inactive'}
+                                </Badge>
+                            ),
+                        },
+                    ]}
+                />
             )}
         </AppPage>
     )

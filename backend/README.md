@@ -114,6 +114,23 @@ Then update `.env`:
 DATABASE_URL=mysql+pymysql://subscription_user:secure_password@localhost:3306/subscription_management
 ```
 
+### 3.1 Configure OTP Email (Gmail SMTP)
+
+To enable OTP-based forgot/reset password by email, add SMTP settings in `.env`:
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-gmail-address@gmail.com
+SMTP_PASSWORD=your-google-app-password
+SMTP_FROM_EMAIL=your-gmail-address@gmail.com
+SMTP_FROM_NAME=SubSync
+SMTP_USE_TLS=true
+SMTP_USE_SSL=false
+```
+
+For Gmail, use an App Password (not your normal account password).
+
 ### 4. Run the Application
 
 ```bash
@@ -130,6 +147,8 @@ Server will start on `http://127.0.0.1:5000`
 - `POST /api/auth/refresh` - Refresh access token
 - `POST /api/auth/logout` - Logout user
 - `GET /api/auth/me` - Get current user info
+- `POST /api/auth/forgot-password` - Request OTP on email
+- `POST /api/auth/reset-password` - Reset password using OTP
 
 ### Users
 - `GET /api/users/` - List all users (admin) or self
