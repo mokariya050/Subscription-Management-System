@@ -110,9 +110,6 @@ CREATE TABLE addresses (
 -- 5. PAYMENT_METHODS (Stored payment instruments)
 -- ============================================================================
 CREATE TABLE payment_methods (
-  id BIGINT UNSIGNED AUMock payment cards for testing)
--- ============================================================================
-CREATE TABLE payment_methods (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT UNSIGNED NOT NULL,
   type ENUM('credit_card','debit_card') NOT NULL DEFAULT 'credit_card',
@@ -124,7 +121,7 @@ CREATE TABLE payment_methods (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL,
   KEY idx_payment_methods_user_id (user_id),
-  KEY idx_payment_methods_default (is_default
+  KEY idx_payment_methods_default (is_default)
 ) ENGINE=InnoDB;
 
 -- ============================================================================
