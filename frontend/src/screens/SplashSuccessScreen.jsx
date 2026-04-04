@@ -1,0 +1,144 @@
+import ScreenFrame from '../components/ScreenFrame'
+
+const html = String.raw`<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SubSync | Success</title>
+<!-- Fonts: Noto Serif for Editorial, Manrope for Functional (replacing requested fonts with DS equivalents for system integrity) -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&amp;family=Manrope:wght@400;500;600;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#4e6073",
+                    "inverse-surface": "#30312e",
+                    "on-secondary": "#ffffff",
+                    "on-background": "#1b1c1a",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#614000",
+                    "outline-variant": "#c5c6cf",
+                    "primary": "#031839",
+                    "on-surface-variant": "#44474e",
+                    "secondary-fixed-dim": "#b5c8df",
+                    "inverse-primary": "#b5c6f1",
+                    "surface-container": "#f0eeea",
+                    "secondary-fixed": "#d1e4fb",
+                    "background": "#fbf9f5",
+                    "surface-dim": "#dbdad6",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#fdba49",
+                    "tertiary-fixed": "#ffddaf",
+                    "surface-tint": "#4d5e83",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#cfe2f9",
+                    "on-primary-fixed-variant": "#35466a",
+                    "on-primary-container": "#8495bd",
+                    "primary-fixed-dim": "#b5c6f1",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#eae8e4",
+                    "primary-fixed": "#d8e2ff",
+                    "on-surface": "#1b1c1a",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#402900",
+                    "surface-variant": "#e4e2de",
+                    "on-primary-fixed": "#061b3c",
+                    "surface": "#fbf9f5",
+                    "on-secondary-fixed": "#091d2e",
+                    "surface-container-low": "#f5f3ef",
+                    "surface-container-highest": "#e4e2de",
+                    "outline": "#75777f",
+                    "tertiary": "#251600",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed-variant": "#36485b",
+                    "inverse-on-surface": "#f2f0ec",
+                    "surface-bright": "#fbf9f5",
+                    "on-tertiary-container": "#c58a18",
+                    "on-secondary-container": "#526478",
+                    "primary-container": "#1b2d4f",
+                    "on-tertiary-fixed": "#281800"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #fbf9f5;
+        }
+        .dot-grid {
+            background-image: radial-gradient(#1b2d4f 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.04;
+        }
+        .geometric-accent {
+            opacity: 0.1;
+            border-left: 1px solid #031839;
+            border-top: 1px solid #031839;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden">
+<!-- Background Layer with Dot Grid -->
+<div class="fixed inset-0 dot-grid pointer-events-none"></div>
+<!-- Asymmetric Geometric Accents -->
+<div class="fixed top-20 right-20 w-64 h-64 geometric-accent pointer-events-none"></div>
+<div class="fixed bottom-20 left-20 w-96 h-32 geometric-accent pointer-events-none"></div>
+<!-- Main Splash Canvas -->
+<main class="relative z-10 min-h-screen flex flex-col items-center justify-center p-6 text-center">
+<!-- Logo Block -->
+<div class="flex flex-col items-center gap-6">
+<!-- Icon Container -->
+<div class="w-20 h-20 bg-primary-container rounded-[20px] flex items-center justify-center shadow-lg">
+<!-- Symbolic representation: circular arrow around document -->
+<span class="material-symbols-outlined text-white text-4xl" data-icon="sync_saved_locally" data-weight="fill" style="font-variation-settings: 'FILL' 1;">sync_saved_locally</span>
+</div>
+<!-- Brand Identity -->
+<div class="space-y-1">
+<h1 class="font-headline text-[28px] font-bold text-primary-container leading-none">SubSync</h1>
+<p class="font-label text-[13px] tracking-wide text-on-surface-variant uppercase font-medium">Subscription &amp; Billing Management</p>
+</div>
+</div>
+<!-- Success Indicator & Progress -->
+<div class="mt-24 w-[200px] flex flex-col items-center gap-4">
+<!-- Progress Track -->
+<div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<!-- Active Progress State (Success/100%) -->
+<div class="h-full bg-tertiary-fixed-dim w-full"></div>
+</div>
+<!-- Status Text -->
+<div class="flex items-center gap-2">
+<p class="font-body text-[13px] text-on-surface-variant">Welcome back 👋</p>
+</div>
+</div>
+<!-- Footnote / Version Anchor -->
+<div class="absolute bottom-12 w-full text-center">
+<span class="font-label text-[10px] text-on-surface-variant/40 tracking-[0.2em] uppercase">The Curated Ledger — v.2.4.0</span>
+</div>
+</main>
+<!-- Visual Polish: Ghost Lift Overlay -->
+<div class="fixed inset-0 bg-gradient-to-t from-surface via-transparent to-surface/50 pointer-events-none opacity-40"></div>
+</body></html>`
+
+export default function SplashSuccessScreen() {
+  return <ScreenFrame title="Splash Success" html={html} />
+}
