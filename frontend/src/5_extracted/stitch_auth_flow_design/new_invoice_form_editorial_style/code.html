@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SubSync | New Invoice</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#251600",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#fbf9f5",
+                        "on-tertiary-container": "#c58a18",
+                        "on-surface-variant": "#44474e",
+                        "outline-variant": "#c5c6cf",
+                        "secondary-fixed-dim": "#b5c8df",
+                        "secondary-container": "#cfe2f9",
+                        "on-background": "#1b1c1a",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#402900",
+                        "surface-tint": "#4d5e83",
+                        "on-secondary-container": "#526478",
+                        "inverse-surface": "#30312e",
+                        "surface-container-low": "#f5f3ef",
+                        "surface": "#fbf9f5",
+                        "surface-container-highest": "#e4e2de",
+                        "background": "#fbf9f5",
+                        "on-tertiary-fixed": "#281800",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0eeea",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#091d2e",
+                        "on-surface": "#1b1c1a",
+                        "inverse-primary": "#b5c6f1",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary-fixed-variant": "#35466a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffddaf",
+                        "on-secondary-fixed-variant": "#36485b",
+                        "surface-variant": "#e4e2de",
+                        "surface-dim": "#dbdad6",
+                        "on-tertiary-fixed-variant": "#614000",
+                        "tertiary-fixed-dim": "#fdba49",
+                        "secondary": "#4e6073",
+                        "primary-fixed-dim": "#b5c6f1",
+                        "primary-container": "#1b2d4f",
+                        "outline": "#75777f",
+                        "on-primary-fixed": "#061b3c",
+                        "primary": "#031839",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#eae8e4",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d1e4fb",
+                        "inverse-on-surface": "#f2f0ec",
+                        "on-surface": "#1b1c1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3, .serif-text { font-family: 'Noto Serif', serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-[#f5f3ef] text-on-surface min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-[#fbf9f5] flex justify-between items-center w-full px-12 py-6 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-serif font-bold text-[#1b2d4f]">SubSync</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-[#1b2d4f] font-bold border-b-2 border-[#e8a838] pb-1 font-sans text-sm tracking-wider" href="#">Subscriptions</a>
+<a class="text-[#1b2d4f]/70 font-medium hover:text-[#e8a838] transition-colors duration-300 font-sans text-sm tracking-wider" href="#">Products</a>
+<a class="text-[#1b2d4f]/70 font-medium hover:text-[#e8a838] transition-colors duration-300 font-sans text-sm tracking-wider" href="#">Reporting</a>
+<a class="text-[#1b2d4f]/70 font-medium hover:text-[#e8a838] transition-colors duration-300 font-sans text-sm tracking-wider" href="#">Users</a>
+<a class="text-[#1b2d4f]/70 font-medium hover:text-[#e8a838] transition-colors duration-300 font-sans text-sm tracking-wider" href="#">Configuration</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-[#1b2d4f] text-white px-4 py-2 rounded-full cursor-pointer hover:bg-primary-container transition-colors duration-300">
+<span class="material-symbols-outlined text-sm">account_circle</span>
+<span class="font-sans text-xs font-semibold tracking-wider">My Profile</span>
+</div>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto px-12 pt-8 pb-20">
+<!-- Action Bar Row 1 -->
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg text-[#1b2d4f] hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+<button class="bg-[#1b2d4f] text-white px-6 py-2 rounded-md font-semibold text-sm hover:opacity-90 transition-opacity">Confirm</button>
+<button class="text-[#1b2d4f]/60 px-4 py-2 rounded-md font-medium text-sm hover:text-[#1b2d4f] transition-colors">Cancel</button>
+<button class="border border-[#1b2d4f]/20 text-[#1b2d4f] px-4 py-2 rounded-md font-medium text-sm hover:bg-white transition-all">Subscription</button>
+<button class="border border-[#1b2d4f]/20 text-[#1b2d4f] px-4 py-2 rounded-md font-medium text-sm hover:bg-white transition-all">Preview</button>
+</div>
+<div class="flex items-center gap-0">
+<div class="bg-[#e8a838] text-white px-4 py-1.5 rounded-l-full text-xs font-bold tracking-widest uppercase">Draft</div>
+<div class="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-r-full text-xs font-bold tracking-widest uppercase opacity-50">Confirmed</div>
+</div>
+</div>
+<!-- Action Bar Row 2 -->
+<div class="flex items-center gap-2 mb-10">
+<button class="border border-[#1b2d4f]/15 text-[#1b2d4f] px-3 py-1 rounded text-xs font-bold uppercase tracking-tighter hover:bg-white transition-all">Send</button>
+<button class="border border-[#1b2d4f]/15 text-[#1b2d4f] px-3 py-1 rounded text-xs font-bold uppercase tracking-tighter hover:bg-white transition-all">Pay</button>
+<button class="border border-[#1b2d4f]/15 text-[#1b2d4f] px-3 py-1 rounded text-xs font-bold uppercase tracking-tighter hover:bg-white transition-all">Print</button>
+</div>
+<!-- Form Card Center Column -->
+<div class="max-w-[840px] mx-auto">
+<div class="bg-white rounded-lg shadow-[0_10px_40px_rgba(27,45,79,0.05)] p-10 border-l-[3px] border-[#e8a838] relative">
+<!-- Paid Indicator -->
+<div class="absolute top-10 right-10 flex items-center gap-3">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Paid</span>
+<div class="w-[14px] h-[14px] border border-outline rounded-sm flex items-center justify-center">
+<!-- Checkbox inactive -->
+</div>
+</div>
+<!-- Form Title -->
+<h2 class="text-3xl font-serif font-bold text-[#1b2d4f] mb-12">New Invoice</h2>
+<!-- Main Form Fields -->
+<div class="space-y-8 mb-16">
+<div class="flex items-end gap-6">
+<label class="w-32 text-sm font-bold uppercase tracking-widest text-on-surface-variant pb-2">Customer</label>
+<div class="flex-1 border-b border-[#e4e2de] pb-2">
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 text-primary font-medium placeholder:text-outline-variant" placeholder="Select customer..." type="text"/>
+</div>
+</div>
+<div class="flex items-end gap-6">
+<label class="w-32 text-sm font-bold uppercase tracking-widest text-on-surface-variant pb-2">Invoice Date</label>
+<div class="flex-1 border-b border-[#e4e2de] pb-2">
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 text-primary font-medium" type="date"/>
+</div>
+</div>
+<div class="flex items-end gap-6">
+<label class="w-32 text-sm font-bold uppercase tracking-widest text-on-surface-variant pb-2">Due Date</label>
+<div class="flex-1 border-b border-[#e4e2de] pb-2">
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 text-primary font-medium" type="date"/>
+</div>
+</div>
+</div>
+<!-- Tabs Row -->
+<div class="flex items-center gap-4 mb-6">
+<button class="bg-[#1b2d4f] text-white px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider">Order Lines</button>
+<button class="border border-[#1b2d4f]/20 text-[#1b2d4f] px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider">Other Info</button>
+</div>
+<!-- Order Lines Table -->
+<div class="border border-[#e5e3df] rounded-md overflow-hidden mb-4">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant border-b border-[#e5e3df]">Product</th>
+<th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant border-b border-[#e5e3df] text-right">Quantity</th>
+<th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant border-b border-[#e5e3df] text-right">Unit Price</th>
+<th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant border-b border-[#e5e3df]">Taxes</th>
+<th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant border-b border-[#e5e3df] text-right">Amount</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#e5e3df]">
+<tr class="hover:bg-surface-container-lowest">
+<td class="px-4 py-3 text-sm font-medium">demo</td>
+<td class="px-4 py-3 text-sm text-right font-mono">1.00</td>
+<td class="px-4 py-3 text-sm text-right font-mono">0.00</td>
+<td class="px-4 py-3 text-xs text-on-surface-variant italic">Tax 15%</td>
+<td class="px-4 py-3 text-sm text-right font-mono font-bold">0.00</td>
+</tr>
+<tr class="border-t border-[#e5e3df] border-dashed">
+<td class="px-4 py-4" colspan="5"> </td>
+</tr>
+<tr class="border-t border-[#e5e3df] border-dashed">
+<td class="px-4 py-4" colspan="5"> </td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer Actions -->
+<div class="mb-12">
+<button class="text-[#e8a838] text-sm font-bold flex items-center gap-1 hover:underline underline-offset-4">
+<span class="material-symbols-outlined text-lg">add</span>
+                        Add a line
+                    </button>
+</div>
+<!-- Totals Section -->
+<div class="flex justify-end">
+<div class="w-64 space-y-3">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant font-medium">Untaxed Amount:</span>
+<span class="font-mono text-primary">$0.00</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant font-medium">Taxes:</span>
+<span class="font-mono text-primary">$0.00</span>
+</div>
+<div class="border-t border-[#e5e3df] pt-3 flex justify-between items-center">
+<span class="font-serif font-bold text-lg text-primary">Total:</span>
+<span class="font-mono font-bold text-xl text-primary">$0.00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Micro-details Descriptor -->
+<p class="text-center mt-6 text-xs italic font-serif text-[#e8a838]">
+                Invoice After Confirm: The ledger entry will be generated upon confirmation of the draft.
+            </p>
+</div>
+</main>
+<!-- Geometric Decorative Accent -->
+<div class="fixed top-0 right-0 -z-10 opacity-10 pointer-events-none">
+<svg fill="none" height="400" viewbox="0 0 400 400" width="400" xmlns="http://www.w3.org/2000/svg">
+<path d="M400 0L0 400" stroke="#1b2d4f" stroke-width="1"></path>
+<path d="M400 100L100 400" stroke="#1b2d4f" stroke-width="1"></path>
+<path d="M400 200L200 400" stroke="#1b2d4f" stroke-width="1"></path>
+<path d="M400 300L300 400" stroke="#1b2d4f" stroke-width="1"></path>
+</svg>
+</div>
+</body></html>
