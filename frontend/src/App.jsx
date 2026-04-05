@@ -110,6 +110,9 @@ export default function App() {
             <Route path="/internal/subscription/detail" element={<SubscriptionDetailScreen />} />
 
             <Route path="/internal" element={<Navigate to="/internal/home" replace />} />
+            <Route path="/internal/user" element={<Navigate to="/internal/users/detail" replace />} />
+            <Route path="/internal/user/*" element={<Navigate to="/internal/users/detail" replace />} />
+            <Route path="/internal/users" element={<Navigate to="/internal/users/detail" replace />} />
             <Route path="/internal/users/detail" element={<UserDetailScreen />} />
             <Route path="/internal/configuration" element={<ConfigurationScreen />} />
             <Route path="/internal/configuration/recurring-plan" element={<RecurringPlanDetailScreen />} />
