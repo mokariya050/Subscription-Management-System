@@ -8,6 +8,19 @@ import Card from '../components/ui/Card'
 import Input from '../components/ui/Input'
 import { storeAPI } from '../services/apiClient'
 
+const ASSET_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000/api').replace(/\/api\/?$/, '')
+
+const resolveAssetUrl = (url) => {
+    if (!url) return ''
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url
+    }
+    if (url.startsWith('/')) {
+        return `${ASSET_BASE_URL}${url}`
+    }
+    return url
+}
+
 const formatPrice = (cents, currency = 'USD') => {
     if (typeof cents !== 'number') return 'N/A'
     return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cents / 100)
@@ -18,6 +31,7 @@ export default function CustomerProductScreen() {
     const navigate = useNavigate()
 
     const [product, setProduct] = useState(null)
+    const [selectedImageUrl, setSelectedImageUrl] = useState('')
     const [selectedPlanId, setSelectedPlanId] = useState('')
     const [quantity, setQuantity] = useState(1)
     const [loading, setLoading] = useState(true)
@@ -37,6 +51,7 @@ export default function CustomerProductScreen() {
 
                 const data = response.data || null
                 setProduct(data)
+                setSelectedImageUrl(Array.isArray(data?.image_urls) && data.image_urls.length > 0 ? data.image_urls[0] : '')
 
                 if (Array.isArray(data?.plans) && data.plans.length > 0) {
                     setSelectedPlanId(String(data.plans[0].id))
@@ -107,15 +122,40 @@ export default function CustomerProductScreen() {
 
                 <div className="grid gap-6 lg:grid-cols-[72px_minmax(0,1fr)_320px]">
                     <aside className="flex flex-row gap-3 lg:flex-col">
-                        {['img 1', 'img 2', 'img 3'].map((label) => (
-                            <Card key={label} className="flex h-14 w-14 items-center justify-center rounded-md border border-outline-variant text-xs text-on-surface-variant">
-                                {label}
+                        {Array.isArray(product?.image_urls) && product.image_urls.length > 0 ? (
+                            product.image_urls.map((imageUrl, index) => (
+                                <button
+                                    key={`${imageUrl}-${index}`}
+                                    type="button"
+                                    onClick={() => setSelectedImageUrl(imageUrl)}
+                                    className={`h-14 w-14 overflow-hidden rounded-md border ${selectedImageUrl === imageUrl ? 'border-primary' : 'border-outline-variant'} focus:outline-none`}
+                                >
+                                    <img
+                                        src={resolveAssetUrl(imageUrl)}
+                                        alt={`Product thumbnail ${index + 1}`}
+                                        className="h-full w-full object-cover"
+                                    />
+                                </button>
+                            ))
+                        ) : (
+                            <Card className="flex h-14 w-14 items-center justify-center rounded-md border border-outline-variant text-xs text-on-surface-variant">
+                                No images
                             </Card>
-                        ))}
+                        )}
                     </aside>
 
-                    <Card className="flex min-h-[320px] items-center justify-center rounded-[0.4rem] border border-outline-variant bg-surface-container-low">
-                        <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Select image / big view</p>
+                    <Card className="min-h-[320px] overflow-hidden rounded-[0.4rem] border border-outline-variant bg-surface-container-low">
+                        {selectedImageUrl ? (
+                            <img
+                                src={resolveAssetUrl(selectedImageUrl)}
+                                alt={product?.name || 'Product image'}
+                                className="h-full w-full object-cover"
+                            />
+                        ) : (
+                            <div className="flex h-full items-center justify-center p-4 text-center text-xs uppercase tracking-[0.2em] text-on-surface-variant">
+                                No product image available
+                            </div>
+                        )}
                     </Card>
 
                     <div className="space-y-4">

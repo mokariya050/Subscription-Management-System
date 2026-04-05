@@ -1,6 +1,7 @@
 """Flask application factory."""
 
-from flask import Flask
+from pathlib import Path
+from flask import Flask, send_from_directory, abort
 
 from config import config
 
@@ -33,4 +34,17 @@ def create_app(config_name='development'):
     get_encryption_manager()
     create_tables(app)
 
+    _register_uploaded_image_routes(app)
     return app
+
+
+def _register_uploaded_image_routes(app):
+    """Serve uploaded product images from the backend static uploads directory."""
+    uploads_dir = Path(app.root_path) / 'static' / 'uploads' / 'products'
+
+    @app.route('/uploads/products/<path:filename>')
+    def serve_uploaded_product_image(filename):
+        file_path = uploads_dir / filename
+        if not file_path.exists() or not file_path.is_file():
+            abort(404)
+        return send_from_directory(str(uploads_dir), filename)
