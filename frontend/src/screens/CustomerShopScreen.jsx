@@ -9,6 +9,19 @@ import CustomerHomeLayout from '../components/layout/CustomerHomeLayout'
 import PageHeader from '../components/layout/PageHeader'
 import { storeAPI } from '../services/apiClient'
 
+const ASSET_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000/api').replace(/\/api\/?$/, '')
+
+const resolveAssetUrl = (url) => {
+    if (!url) return ''
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url
+    }
+    if (url.startsWith('/')) {
+        return `${ASSET_BASE_URL}${url}`
+    }
+    return url
+}
+
 const defaultPriceRanges = [
     { key: 'all', label: 'All prices' },
     { key: 'under_25', label: '$0 - $25' },
@@ -40,6 +53,7 @@ function ProductWireframeCard({ product }) {
     const fromPrice = product.pricing_summary?.from_price_cents
     const toPrice = product.pricing_summary?.to_price_cents
     const interval = product.pricing_summary?.primary_interval
+    const imageUrl = Array.isArray(product.image_urls) && product.image_urls.length > 0 ? product.image_urls[0] : null
 
     const pricingLabel = useMemo(() => {
         if (typeof fromPrice !== 'number') return 'Pricing unavailable'
@@ -50,7 +64,21 @@ function ProductWireframeCard({ product }) {
     }, [fromPrice, toPrice, product.currency])
 
     return (
-        <Card className="flex min-h-[156px] flex-col justify-between rounded-[1rem] border border-outline-variant bg-white/80 p-4 text-left">
+        <Card className="flex min-h-[220px] flex-col justify-between rounded-[1rem] border border-outline-variant bg-white/80 p-4 text-left">
+            {imageUrl ? (
+                <div className="mb-4 overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-low">
+                    <img
+                        src={resolveAssetUrl(imageUrl)}
+                        alt={product.name}
+                        className="h-36 w-full object-cover"
+                    />
+                </div>
+            ) : (
+                <div className="mb-4 flex h-36 items-center justify-center rounded-2xl border border-outline-variant bg-surface-container-low text-xs text-on-surface-variant">
+                    No image available
+                </div>
+            )}
+
             <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{product.name}</p>
                 <p className="mt-2 text-sm font-semibold text-on-surface">{pricingLabel}</p>
