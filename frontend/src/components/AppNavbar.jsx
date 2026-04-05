@@ -103,8 +103,8 @@ export default function AppNavbar({ current, onLogout }) {
         const baseItems = [
             ...navItems.map((item) => ({ to: item.to, label: item.label })),
             ...settingsItems.map((item) => ({ to: item.to, label: `Settings: ${item.label}` })),
-            { to: '/invoice/new', label: 'Create New Invoice' },
-            { to: '/products/new', label: 'Create New Product' },
+            { to: '/internal/invoice/new', label: 'Create New Invoice' },
+            { to: '/internal/products/new', label: 'Create New Product' },
         ]
 
         const normalizedQuery = query.trim().toLowerCase()
